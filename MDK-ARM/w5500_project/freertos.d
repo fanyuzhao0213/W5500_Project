@@ -57,3 +57,10 @@ w5500_project\freertos.o: ../Application/RTT/SEGGER_RTT.h
 w5500_project\freertos.o: ../Application/RTT/SEGGER_RTT_Conf.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 w5500_project\freertos.o: ../Core/Inc/usart.h
+w5500_project\freertos.o: ../Application/W5500/w5500_conf.h
+w5500_project\freertos.o: ../Application/W5500/netconf.h
+w5500_project\freertos.o: ../Application/W5500/wizchip_conf.h
+w5500_project\freertos.o: ../Application/W5500/w5500.h
+w5500_project\freertos.o: ../Application/W5500/wizchip_conf.h
+w5500_project\freertos.o: ../Application/W5500/tcp_client.h
+w5500_project\freertos.o: ../Application/W5500/socket.h

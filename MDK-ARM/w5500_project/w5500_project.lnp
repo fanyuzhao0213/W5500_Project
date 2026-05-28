@@ -42,6 +42,14 @@
 "w5500_project\port.o"
 "w5500_project\segger_rtt.o"
 "w5500_project\segger_rtt_printf.o"
+"w5500_project\netconf.o"
+"w5500_project\socket.o"
+"w5500_project\w5500.o"
+"w5500_project\w5500_conf.o"
+"w5500_project\wizchip_conf.o"
+"w5500_project\dhcp.o"
+"w5500_project\tcp_client.o"
+"w5500_project\dns.o"
 --library_type=microlib --strict --scatter "w5500_project\w5500_project.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
