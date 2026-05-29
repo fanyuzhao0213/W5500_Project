@@ -63,3 +63,4 @@ net_status_t NetConfig_GetStatus(void)
 {
     return g_net_status;
 }
+

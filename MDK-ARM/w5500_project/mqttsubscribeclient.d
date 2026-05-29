@@ -1,0 +1,11 @@
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTSubscribeClient.c
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTPacket.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTConnect.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTPublish.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTSubscribe.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTUnsubscribe.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTFormat.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\StackTrace.h
+w5500_project\mqttsubscribeclient.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+w5500_project\mqttsubscribeclient.o: ..\Application\MQTT\src\MQTTPacket.h
+w5500_project\mqttsubscribeclient.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

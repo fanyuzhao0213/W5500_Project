@@ -1,10 +1,10 @@
 Dependencies for Project 'w5500_project', Target 'w5500_project': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
 F (startup_stm32f405xx.s)(0x6A18082D)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1" -I ../Core/Inc-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 536" --pd "_RTE_ SETA 1" --pd "STM32F405xx SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f405xx.lst --xref -o w5500_project\startup_stm32f405xx.o --depend w5500_project\startup_stm32f405xx.d)
-F (../Core/Src/main.c)(0x6A1806CA)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\main.o --omf_browse w5500_project\main.crf --depend w5500_project\main.d)
+F (../Core/Src/main.c)(0x6A1915D4)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\main.o --omf_browse w5500_project\main.crf --depend w5500_project\main.d)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -39,7 +39,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -53,20 +53,17 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x68E8E65E)
 I (../Core/Inc/adc.h)(0x6A17AE3F)
 I (../Core/Inc/spi.h)(0x6A17AE3F)
-I (../Core/Inc/usart.h)(0x6A17AE3F)
+I (../Core/Inc/usart.h)(0x6A191661)
 I (../Core/Inc/gpio.h)(0x6A17AE3D)
-I (..\Application\RTT\LOG.h)(0x6A17DFD1)
+I (../Application/RTT/LOG.h)(0x6A1916BA)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
-I (..\Application\RTT\SEGGER_RTT.h)(0x68FC324B)
-I (..\Application\RTT\SEGGER_RTT_Conf.h)(0x68FC324B)
-I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 F (../Core/Src/gpio.c)(0x6A180826)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\gpio.o --omf_browse w5500_project\gpio.crf --depend w5500_project\gpio.d)
 I (../Core/Inc/gpio.h)(0x6A17AE3D)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -99,11 +96,11 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
-F (../Core/Src/freertos.c)(0x6A18182F)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\freertos.o --omf_browse w5500_project\freertos.crf --depend w5500_project\freertos.d)
+F (../Core/Src/freertos.c)(0x6A1915D4)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\freertos.o --omf_browse w5500_project\freertos.crf --depend w5500_project\freertos.d)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -113,7 +110,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68E8E65E)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -149,25 +146,22 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x68E8E65E)
-I (../Application/RTT/LOG.h)(0x6A17DFD1)
+I (../Application/RTT/LOG.h)(0x6A1916BA)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
-I (../Application/RTT/SEGGER_RTT.h)(0x68FC324B)
-I (../Application/RTT/SEGGER_RTT_Conf.h)(0x68FC324B)
-I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
-I (../Core/Inc/usart.h)(0x6A17AE3F)
+I (../Core/Inc/usart.h)(0x6A191661)
 I (../Application/W5500/w5500_conf.h)(0x6A180C3E)
-I (../Application/W5500/netconf.h)(0x6A180C3E)
+I (../Application/W5500/netconf.h)(0x6A1915D4)
 I (../Application/W5500/wizchip_conf.h)(0x6A180C3D)
 I (../Application/W5500/w5500.h)(0x6A180A6C)
-I (../Application/W5500/tcp_client.h)(0x6A181857)
+I (../Application/W5500/tcp_client.h)(0x6A181CC0)
 I (../Application/W5500/socket.h)(0x6A180A6C)
 F (../Core/Src/adc.c)(0x6A17AE3F)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\adc.o --omf_browse w5500_project\adc.crf --depend w5500_project\adc.d)
 I (../Core/Inc/adc.h)(0x6A17AE3F)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -204,7 +198,7 @@ F (../Core/Src/spi.c)(0x6A180C6F)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g
 I (../Core/Inc/spi.h)(0x6A17AE3F)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -237,11 +231,11 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
-F (../Core/Src/usart.c)(0x6A180829)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\usart.o --omf_browse w5500_project\usart.crf --depend w5500_project\usart.d)
-I (../Core/Inc/usart.h)(0x6A17AE3F)
+F (../Core/Src/usart.c)(0x6A191687)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\usart.o --omf_browse w5500_project\usart.crf --depend w5500_project\usart.d)
+I (../Core/Inc/usart.h)(0x6A191661)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -274,10 +268,11 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
+I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 F (../Core/Src/stm32f4xx_it.c)(0x6A17D9E6)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_it.o --omf_browse w5500_project\stm32f4xx_it.crf --depend w5500_project\stm32f4xx_it.d)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -314,7 +309,7 @@ I (../Core/Inc/stm32f4xx_it.h)(0x6A17AE3F)
 F (../Core/Src/stm32f4xx_hal_msp.c)(0x6A17AE3F)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_msp.o --omf_browse w5500_project\stm32f4xx_hal_msp.crf --depend w5500_project\stm32f4xx_hal_msp.d)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -349,7 +344,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Core/Src/stm32f4xx_hal_timebase_tim.c)(0x6A17AE40)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_timebase_tim.o --omf_browse w5500_project\stm32f4xx_hal_timebase_tim.crf --depend w5500_project\stm32f4xx_hal_timebase_tim.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -384,7 +379,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_adc.o --omf_browse w5500_project\stm32f4xx_hal_adc.crf --depend w5500_project\stm32f4xx_hal_adc.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -419,7 +414,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_adc_ex.o --omf_browse w5500_project\stm32f4xx_hal_adc_ex.crf --depend w5500_project\stm32f4xx_hal_adc_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -455,7 +450,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_ll_adc.o --omf_browse w5500_project\stm32f4xx_ll_adc.crf --depend w5500_project\stm32f4xx_ll_adc.d)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_rcc.o --omf_browse w5500_project\stm32f4xx_hal_rcc.crf --depend w5500_project\stm32f4xx_hal_rcc.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -490,7 +485,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_rcc_ex.o --omf_browse w5500_project\stm32f4xx_hal_rcc_ex.crf --depend w5500_project\stm32f4xx_hal_rcc_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -525,7 +520,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_flash.o --omf_browse w5500_project\stm32f4xx_hal_flash.crf --depend w5500_project\stm32f4xx_hal_flash.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -560,7 +555,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_flash_ex.o --omf_browse w5500_project\stm32f4xx_hal_flash_ex.crf --depend w5500_project\stm32f4xx_hal_flash_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -595,7 +590,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_flash_ramfunc.o --omf_browse w5500_project\stm32f4xx_hal_flash_ramfunc.crf --depend w5500_project\stm32f4xx_hal_flash_ramfunc.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -630,7 +625,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_gpio.o --omf_browse w5500_project\stm32f4xx_hal_gpio.crf --depend w5500_project\stm32f4xx_hal_gpio.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -665,7 +660,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_dma_ex.o --omf_browse w5500_project\stm32f4xx_hal_dma_ex.crf --depend w5500_project\stm32f4xx_hal_dma_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -700,7 +695,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_dma.o --omf_browse w5500_project\stm32f4xx_hal_dma.crf --depend w5500_project\stm32f4xx_hal_dma.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -735,7 +730,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_pwr.o --omf_browse w5500_project\stm32f4xx_hal_pwr.crf --depend w5500_project\stm32f4xx_hal_pwr.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -770,7 +765,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_pwr_ex.o --omf_browse w5500_project\stm32f4xx_hal_pwr_ex.crf --depend w5500_project\stm32f4xx_hal_pwr_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -805,7 +800,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_cortex.o --omf_browse w5500_project\stm32f4xx_hal_cortex.crf --depend w5500_project\stm32f4xx_hal_cortex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -840,7 +835,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal.o --omf_browse w5500_project\stm32f4xx_hal.crf --depend w5500_project\stm32f4xx_hal.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -875,7 +870,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_exti.o --omf_browse w5500_project\stm32f4xx_hal_exti.crf --depend w5500_project\stm32f4xx_hal_exti.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -910,7 +905,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_spi.o --omf_browse w5500_project\stm32f4xx_hal_spi.crf --depend w5500_project\stm32f4xx_hal_spi.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -945,7 +940,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_tim.o --omf_browse w5500_project\stm32f4xx_hal_tim.crf --depend w5500_project\stm32f4xx_hal_tim.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -980,7 +975,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_tim_ex.o --omf_browse w5500_project\stm32f4xx_hal_tim_ex.crf --depend w5500_project\stm32f4xx_hal_tim_ex.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -1015,7 +1010,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\stm32f4xx_hal_uart.o --omf_browse w5500_project\stm32f4xx_hal_uart.crf --depend w5500_project\stm32f4xx_hal_uart.d)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -1059,7 +1054,7 @@ I (../Drivers/CMSIS/Include/cmsis_armcc.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Include/mpu_armv7.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h)(0x68E8E71E)
@@ -1087,7 +1082,7 @@ F (../Middlewares/Third_Party/FreeRTOS/Source/croutine.c)(0x68E8E65E)(--c99 -c -
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1101,7 +1096,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1116,7 +1111,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1129,7 +1124,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1143,7 +1138,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1158,7 +1153,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1173,7 +1168,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1189,7 +1184,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1207,7 +1202,7 @@ I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1219,7 +1214,7 @@ F (../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c)(0x6
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x68E8E65E)
 I (D:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x6025237E)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
-I (../Core/Inc/FreeRTOSConfig.h)(0x6A17AE3E)
+I (../Core/Inc/FreeRTOSConfig.h)(0x6A1915D4)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h)(0x68E8E65E)
@@ -1229,33 +1224,30 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/task.h)(0x68E8E65E)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/list.h)(0x68E8E65E)
 F (..\Application\RTT\SEGGER_RTT.c)(0x68FC324B)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\segger_rtt.o --omf_browse w5500_project\segger_rtt.crf --depend w5500_project\segger_rtt.d)
 I (..\Application\RTT\SEGGER_RTT.h)(0x68FC324B)
-I (..\Application\RTT\SEGGER_RTT_Conf.h)(0x68FC324B)
+I (..\Application\RTT\SEGGER_RTT_Conf.h)(0x6A18FB24)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
 F (..\Application\RTT\SEGGER_RTT_printf.c)(0x68FC324B)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\segger_rtt_printf.o --omf_browse w5500_project\segger_rtt_printf.crf --depend w5500_project\segger_rtt_printf.d)
 I (..\Application\RTT\SEGGER_RTT.h)(0x68FC324B)
-I (..\Application\RTT\SEGGER_RTT_Conf.h)(0x68FC324B)
+I (..\Application\RTT\SEGGER_RTT_Conf.h)(0x6A18FB24)
 I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
-F (..\Application\W5500\netconf.c)(0x6A181567)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\netconf.o --omf_browse w5500_project\netconf.crf --depend w5500_project\netconf.d)
-I (..\Application\W5500\netconf.h)(0x6A180C3E)
+F (..\Application\W5500\netconf.c)(0x6A191645)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\netconf.o --omf_browse w5500_project\netconf.crf --depend w5500_project\netconf.d)
+I (..\Application\W5500\netconf.h)(0x6A1915D4)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (..\Application\W5500\wizchip_conf.h)(0x6A180C3D)
 I (..\Application\W5500\w5500.h)(0x6A180A6C)
 I (..\Application\W5500\socket.h)(0x6A180A6C)
 I (..\Application\W5500\Internet\DHCP\dhcp.h)(0x6A180A70)
-I (../Application/RTT/LOG.h)(0x6A17DFD1)
+I (../Application/RTT/LOG.h)(0x6A1916BA)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
-I (../Application/RTT/SEGGER_RTT.h)(0x68FC324B)
-I (../Application/RTT/SEGGER_RTT_Conf.h)(0x68FC324B)
-I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
-I (../Core/Inc/usart.h)(0x6A17AE3F)
+I (../Core/Inc/usart.h)(0x6A191661)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -1292,7 +1284,7 @@ I (..\Application\W5500\socket.h)(0x6A180A6C)
 I (..\Application\W5500\wizchip_conf.h)(0x6A180C3D)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (..\Application\W5500\w5500.h)(0x6A180A6C)
-F (..\Application\W5500\w5500.c)(0x6A180A6C)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\w5500.o --omf_browse w5500_project\w5500.crf --depend w5500_project\w5500.d)
+F (..\Application\W5500\w5500.c)(0x6A181CC9)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\w5500.o --omf_browse w5500_project\w5500.crf --depend w5500_project\w5500.d)
 I (..\Application\W5500\w5500.h)(0x6A180A6C)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (..\Application\W5500\wizchip_conf.h)(0x6A180C3D)
@@ -1304,7 +1296,7 @@ I (..\Application\W5500\w5500.h)(0x6A180A6C)
 I (../Core/Inc/spi.h)(0x6A17AE3F)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)
@@ -1347,25 +1339,22 @@ I (../Application/W5500/wizchip_conf.h)(0x6A180C3D)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (../Application/W5500/w5500.h)(0x6A180A6C)
 I (..\Application\W5500\Internet\DHCP\dhcp.h)(0x6A180A70)
-F (..\Application\W5500\tcp_client.c)(0x6A18180C)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\tcp_client.o --omf_browse w5500_project\tcp_client.crf --depend w5500_project\tcp_client.d)
-I (..\Application\W5500\tcp_client.h)(0x6A181857)
+F (..\Application\W5500\tcp_client.c)(0x6A181CC0)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../Application/RTT -I ../Application/W5500 -I ..\Application\W5500 -I ..\Application\W5500\Internet\DHCP -I ..\Application\W5500\Internet -I ..\Application\W5500\Internet\DNS-I.\RTE\_w5500_project-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o w5500_project\tcp_client.o --omf_browse w5500_project\tcp_client.crf --depend w5500_project\tcp_client.d)
+I (..\Application\W5500\tcp_client.h)(0x6A181CC0)
 I (D:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x6025237E)
 I (..\Application\W5500\socket.h)(0x6A180A6C)
 I (..\Application\W5500\wizchip_conf.h)(0x6A180C3D)
 I (..\Application\W5500\w5500.h)(0x6A180A6C)
-I (..\Application\W5500\netconf.h)(0x6A180C3E)
+I (..\Application\W5500\netconf.h)(0x6A1915D4)
 I (..\Application\W5500\Internet\DNS\dns.h)(0x6A1817FA)
-I (../Application/RTT/LOG.h)(0x6A17DFD1)
+I (../Application/RTT/LOG.h)(0x6A1916BA)
 I (D:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x60252376)
 I (D:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
-I (../Application/RTT/SEGGER_RTT.h)(0x68FC324B)
-I (../Application/RTT/SEGGER_RTT_Conf.h)(0x68FC324B)
-I (D:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x60252374)
-I (../Core/Inc/usart.h)(0x6A17AE3F)
+I (../Core/Inc/usart.h)(0x6A191661)
 I (../Core/Inc/main.h)(0x6A17AE40)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
-I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A17AE40)
+I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1915D4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h)(0x68E8E71E)
 I (../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h)(0x68E8E71E)

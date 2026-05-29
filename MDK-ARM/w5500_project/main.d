@@ -57,6 +57,3 @@ w5500_project\main.o: ../Application/RTT/LOG.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-w5500_project\main.o: ../Application/RTT/SEGGER_RTT.h
-w5500_project\main.o: ../Application/RTT/SEGGER_RTT_Conf.h
-w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

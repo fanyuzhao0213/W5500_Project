@@ -44,7 +44,7 @@ void MX_UART4_Init(void);
 void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+int uart_printf(const char *format, ...);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

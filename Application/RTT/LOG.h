@@ -26,11 +26,15 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
+#define DEBUG_UART4   	1
+#define DEBUG_RTT 		0
+
+
 //=============================================================================
 // 输出方式选择 (三选一)
 //=============================================================================
 // #define DEBUG_OUTPUT DEBUG_RTT    // 使用RTT输出
-// #define DEBUG_OUTPUT DEBUG_UART4  // 使用UART4输出
+ #define DEBUG_OUTPUT DEBUG_UART4  // 使用UART4输出
 
 #ifndef DEBUG_OUTPUT
 #define DEBUG_OUTPUT DEBUG_RTT  // 默认使用RTT
@@ -49,7 +53,6 @@ extern "C" {
 //=============================================================================
 #if DEBUG_OUTPUT == DEBUG_UART4
 #include "usart.h"
-extern UART_HandleTypeDef huart4;
 #endif
 
 //=============================================================================
@@ -71,11 +74,10 @@ void LOG_WriteString(const char* str);
 #elif DEBUG_OUTPUT == DEBUG_UART4
 
 #define LOG_CLEAR()         do{}while(0)
-#define LOG_WRITE(p, len)   HAL_UART_Transmit(&huart4, p, len, 100)
-#define LOG_WRITE_STRING(p) do { \
-    uint16_t _len = strlen(p); \
-    if (_len > 0) HAL_UART_Transmit(&huart4, (uint8_t*)p, _len, 100); \
+#define LOG_WRITE(p, len)   do { \
+    if (len > 0) uart_printf("%.*s", len, p); \
 } while(0)
+#define LOG_WRITE_STRING(p) uart_printf("%s", p)
 
 #else
 

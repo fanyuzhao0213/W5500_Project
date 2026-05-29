@@ -10,9 +10,6 @@ w5500_project\netconf.o: ../Application/RTT/LOG.h
 w5500_project\netconf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\netconf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 w5500_project\netconf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-w5500_project\netconf.o: ../Application/RTT/SEGGER_RTT.h
-w5500_project\netconf.o: ../Application/RTT/SEGGER_RTT_Conf.h
-w5500_project\netconf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 w5500_project\netconf.o: ../Core/Inc/usart.h
 w5500_project\netconf.o: ../Core/Inc/main.h
 w5500_project\netconf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h

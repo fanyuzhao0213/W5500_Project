@@ -53,9 +53,6 @@ w5500_project\freertos.o: ../Application/RTT/LOG.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-w5500_project\freertos.o: ../Application/RTT/SEGGER_RTT.h
-w5500_project\freertos.o: ../Application/RTT/SEGGER_RTT_Conf.h
-w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 w5500_project\freertos.o: ../Core/Inc/usart.h
 w5500_project\freertos.o: ../Application/W5500/w5500_conf.h
 w5500_project\freertos.o: ../Application/W5500/netconf.h
