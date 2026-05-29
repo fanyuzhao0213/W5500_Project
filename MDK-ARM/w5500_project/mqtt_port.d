@@ -38,3 +38,8 @@ w5500_project\mqtt_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi
 w5500_project\mqtt_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 w5500_project\mqtt_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 w5500_project\mqtt_port.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+w5500_project\mqtt_port.o: ../Application/RTT/LOG.h
+w5500_project\mqtt_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+w5500_project\mqtt_port.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+w5500_project\mqtt_port.o: ../Core/Inc/usart.h
+w5500_project\mqtt_port.o: ../Core/Inc/main.h

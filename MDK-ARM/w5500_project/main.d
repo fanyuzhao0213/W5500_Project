@@ -58,3 +58,15 @@ w5500_project\main.o: ../Application/RTT/LOG.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+w5500_project\main.o: ..\Application\MQTT\inc\mqtt_queue.h
+w5500_project\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTClient.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTPacket.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTConnect.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTPublish.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTSubscribe.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTUnsubscribe.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTFormat.h
+w5500_project\main.o: ..\Application\MQTT\paho\StackTrace.h
+w5500_project\main.o: ..\Application\MQTT\paho\MQTTPacket.h
+w5500_project\main.o: ..\Application\MQTT\inc\mqtt_port.h

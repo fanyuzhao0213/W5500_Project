@@ -15,7 +15,8 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
+  /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
@@ -27,7 +28,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "LOG.h"
-#include "stm32f4xx_hal.h"
+#include "mqtt_queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,7 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+TIM_HandleTypeDef htim2;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -52,10 +53,10 @@ IWDG_HandleTypeDef hiwdg;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
-/* USER CODE BEGIN PFP */
-
+void MX_TIM2_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,7 +93,6 @@ void MX_FREERTOS_Init(void);
  *
  *==============================================================================
  */
-
 /**
  * @brief  初始化看门狗 (10秒超时)
  */
@@ -105,22 +105,40 @@ void watchdog_init(void)
     LOGI("Watchdog: initialized (timeout=10s)");
 }
 
-/**
- * @brief  喂狗 (刷新计数器)
- */
-void watchdog_feed(void)
+/* TIM2 初始化函数 */
+void MX_TIM2_Init(void)
 {
-    HAL_IWDG_Refresh(&hiwdg);
-}
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-/**
- * @brief  系统软复位
- */
-void system_reset(void)
-{
-    LOGI("System: software reset");
-    HAL_Delay(100);
-    NVIC_SystemReset();
+    /* 使能 TIM2 时钟 */
+    __HAL_RCC_TIM2_CLK_ENABLE();
+
+    htim2.Instance = TIM2;
+    htim2.Init.Prescaler = 84-1;          // 84MHz / 84 = 1MHz
+    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim2.Init.Period = 1000-1;           // 1MHz / 1000 = 1kHz (1ms)
+    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+    if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+    sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    /* 使能 TIM2 中断 */
+    HAL_NVIC_SetPriority(TIM2_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(TIM2_IRQn);
 }
 
 /**
@@ -203,6 +221,8 @@ int main(void)
   MX_UART4_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  MX_TIM2_Init();
+  HAL_TIM_Base_Start_IT(&htim2);  // 启动并开启中断
   print_reset_cause();
   LOG_CLEAR();
   LOGI("======================================");
@@ -213,6 +233,13 @@ int main(void)
 
   /* 初始化看门狗 */
   watchdog_init();
+
+  /* 初始化MQTT队列 */
+  if (mqtt_queue_init() != 0) {
+      LOGE("MQTT Queue init failed!");
+  } else {
+      LOGI("MQTT Queue initialized");
+  }
 
   /* USER CODE END 2 */
 
@@ -270,7 +297,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
@@ -301,7 +328,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+    if (htim->Instance == TIM2)
+    {
+        static uint32_t counter = 0;
+        counter++;
+        if (counter % 1000 == 0)   // 每 1 秒
+        {
+			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+        }
+    }
   /* USER CODE END Callback 1 */
 }
 
@@ -331,9 +366,13 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
+  /* User can add his own implementation to report the HAL error return number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+/* USER CODE BEGIN 5 */
+
+/* USER CODE END 5 */
 

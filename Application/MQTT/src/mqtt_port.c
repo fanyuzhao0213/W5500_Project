@@ -1,6 +1,7 @@
 #include "mqtt_port.h"
 #include "tcp_client.h"
 #include "stm32f4xx_hal.h"
+#include "LOG.h"
 
 /* Timer 实现 */
 void TimerInit(Timer* timer) {
@@ -57,10 +58,10 @@ static int mqtt_network_write(Network* n, unsigned char* buffer, int len, int ti
     int sent_len = 0;
     int rc;
     Timer timer;
-    
+
     TimerInit(&timer);
     TimerCountdownMS(&timer, timeout_ms);
-    
+
     do {
         rc = tcp_client_send(buffer + sent_len, len - sent_len);
         if (rc > 0) {
@@ -72,7 +73,7 @@ static int mqtt_network_write(Network* n, unsigned char* buffer, int len, int ti
             HAL_Delay(1);
         }
     } while (sent_len < len && !TimerIsExpired(&timer));
-    
+
     return sent_len;
 }
 

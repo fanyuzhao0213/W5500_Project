@@ -61,6 +61,9 @@
 "w5500_project\mqttserializepublish.o"
 "w5500_project\mqttsubscribeclient.o"
 "w5500_project\mqttunsubscribeclient.o"
+"w5500_project\mqtt_queue.o"
+"w5500_project\mqtt_task.o"
+"w5500_project\timer_task.o"
 --library_type=microlib --strict --scatter "w5500_project\w5500_project.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

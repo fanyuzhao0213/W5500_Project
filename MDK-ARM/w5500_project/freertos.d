@@ -55,15 +55,10 @@ w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 w5500_project\freertos.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 w5500_project\freertos.o: ../Core/Inc/usart.h
-w5500_project\freertos.o: ../Application/W5500/w5500_conf.h
-w5500_project\freertos.o: ../Application/W5500/netconf.h
-w5500_project\freertos.o: ../Application/W5500/wizchip_conf.h
-w5500_project\freertos.o: ../Application/W5500/w5500.h
-w5500_project\freertos.o: ../Application/W5500/wizchip_conf.h
-w5500_project\freertos.o: ../Application/W5500/tcp_client.h
-w5500_project\freertos.o: ../Application/W5500/socket.h
-w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_client.h
-w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_config.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_task.h
+w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_queue.h
+w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTClient.h
 w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTPacket.h
 w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTConnect.h
@@ -74,3 +69,6 @@ w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTFormat.h
 w5500_project\freertos.o: ..\Application\MQTT\paho\StackTrace.h
 w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTPacket.h
 w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_port.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_config.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\timer_task.h
+w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

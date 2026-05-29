@@ -109,17 +109,14 @@ int tcp_client_send(uint8_t* buf, uint16_t len)
         return -1;
     }
 
-    /* 非阻塞模式：先检查发送缓冲区是否有足够空间 */
     free_size = getSn_TX_FSR(TCP_CLIENT_SOCKET);
+
     if (len > free_size) {
-        /* 发送缓冲区空间不足，立即返回，不阻塞 */
-        LOGW("TCP: send buffer full (need=%d, free=%d)", len, free_size);
         return 0;
     }
 
     ret = send(TCP_CLIENT_SOCKET, buf, len);
     if (ret < 0) {
-        LOGE("TCP: send() failed, ret=%d", ret);
         g_connected = 0;
         return -1;
     }

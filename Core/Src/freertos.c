@@ -26,13 +26,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "LOG.h"
-#include "w5500_conf.h"
-#include "netconf.h"
-#include "wizchip_conf.h"
-#include "tcp_client.h"
-#include "socket.h"
-#include "main.h"
-#include "mqtt_client.h"
+#include "mqtt_task.h"
+#include "mqtt_queue.h"
+#include "mqtt_config.h"
+#include "timer_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,16 +51,11 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-osThreadId defaultTaskHandle;
-osThreadId NetworkTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void mqtt_message_callback(MessageData* md);
-/* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
-void StartNetworkTask(void const * argument);
+/* USER CODE END FunctionPrototypes */
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -112,21 +104,22 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
+  /* 已使用 TIM3 硬件定时器 (1ms)，不需要软件定时器 */
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
-  /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* 创建 MQTT 相关任务 (网络任务 + 发送任务 + 接收任务) */
+  LOGI("FREERTOS: creating MQTT tasks...");
+  mqtt_task_create();
 
-  /* definition and creation of NetworkTask */
-  osThreadDef(NetworkTask, StartNetworkTask, osPriorityNormal, 0, 512);
-  NetworkTaskHandle = osThreadCreate(osThread(NetworkTask), NULL);
+  /* 创建定时器任务 */
+  LOGI("FREERTOS: creating Timer task...");
+  timer_task_create();
+
+  LOGI("FREERTOS: all tasks created, starting scheduler...");
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -134,105 +127,10 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
-{
-  (void)argument;
-  for(;;)
-  {
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    osDelay(500);
-  }
-}
-
-/* USER CODE BEGIN Header_StartNetworkTask */
-/**
-  * @brief  Function implementing the NetworkTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartNetworkTask */
-
-void mqtt_message_callback(MessageData* md)
-{
-    char* topic = (char*)md->topicName->lenstring.data;
-    char* payload = (char*)md->message->payload;
-
-    LOGI("TOPIC: %.*s", md->topicName->lenstring.len, topic);
-    LOGI("PAYLOAD: %.*s", (int)md->message->payloadlen, payload);
-}
-
-void StartNetworkTask(void const * argument)
-{
-  extern IWDG_HandleTypeDef hiwdg;
-  (void)argument;
-  uint8_t version;
-  uint32_t last_publish_time = 0;
-
-  LOGI("NetworkTask: step 1 - task started");
-  HAL_IWDG_Refresh(&hiwdg);
-
-  LOGI("NetworkTask: step 2 - registering SPI cbfunc");
-  wizchip_spi_cbfunc();
-
-  LOGI("NetworkTask: step 3 - calling wizchip_init");
-  uint8_t snum[] = {16, 16, 16, 16, 16, 16, 16, 16};
-  wizchip_init(snum, snum);
-
-  LOGI("NetworkTask: step 4 - delay 100ms");
-  HAL_Delay(100);
-
-  LOGI("NetworkTask: step 5 - reading VERSIONR");
-  version = getVERSIONR();
-  LOGI("NetworkTask: step 6 - VERSIONR = 0x%02X", version);
-
-  if (version == 0x04) {
-      LOGI("NetworkTask: W5500 OK!");
-  } else {
-      LOGE("NetworkTask: W5500 ERROR! Expected 0x04, got 0x%02X", version);
-  }
-
-  LOGI("NetworkTask: step 7 - calling NetConfig_Init");
-  NetConfig_Init();
-
-  LOGI("NetworkTask: step 8 - initializing MQTT client");
-  mqtt_client_init();
-
-  LOGI("NetworkTask: step 9 - connecting to MQTT broker");
-  if (mqtt_client_connect() != MQTT_SUCCESS) {
-      LOGE("NetworkTask: MQTT connect failed!");
-      while(1) {
-          osDelay(1000);
-      }
-  }
-
-  LOGI("NetworkTask: step 10 - subscribing to topic: %s", MQTT_SUBSCRIBE_TOPIC);
-  mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS0, mqtt_message_callback);
-
-  LOGI("NetworkTask: MQTT setup complete, entering main loop");
-
-  for(;;)
-  {
-    HAL_IWDG_Refresh(&hiwdg);
-
-    mqtt_client_loop(100);
-
-    if (HAL_GetTick() - last_publish_time >= MQTT_PUBLISH_INTERVAL) {
-        last_publish_time = HAL_GetTick();
-        mqtt_client_publish(MQTT_PUBLISH_TOPIC, "Hello STM32 MQTT", strlen("Hello STM32 MQTT"), QOS0);
-    }
-
-    osDelay(10);
-  }
-}
-
 /* USER CODE BEGIN Application */
 
+/* TIM3 定时器函数已移至 stm32f4xx_hal_timebase_tim3.c */
+
 /* USER CODE END Application */
+
 

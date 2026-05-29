@@ -72,8 +72,8 @@ int mqtt_client_subscribe(const char* topicFilter, enum QoS qos, messageHandler 
 
 int mqtt_client_publish(const char* topicName, const char* payload, size_t payloadlen, enum QoS qos) {
     int rc;
-	MQTTMessage message;
-	memset(&message, 0, sizeof(MQTTMessage));
+    MQTTMessage message;
+    memset(&message, 0, sizeof(MQTTMessage));
 
     if (!mqtt_client.isconnected) {
         LOGE("MQTT: Not connected");
@@ -88,7 +88,7 @@ int mqtt_client_publish(const char* topicName, const char* payload, size_t paylo
     rc = MQTTPublish(&mqtt_client, topicName, &message);
 
     if (rc == MQTT_SUCCESS) {
-        LOGI("MQTT: Published to %s: %s", topicName, payload);
+        LOGI("MQTT Publish: topic : %s, payload : %s, qos : %d", topicName, payload, qos);
         return MQTT_SUCCESS;
     } else {
         LOGE("MQTT: Publish failed, rc=%d", rc);

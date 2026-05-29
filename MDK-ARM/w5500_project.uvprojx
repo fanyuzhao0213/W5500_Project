@@ -728,6 +728,21 @@
               <FileType>1</FileType>
               <FilePath>..\Application\MQTT\paho\MQTTUnsubscribeClient.c</FilePath>
             </File>
+            <File>
+              <FileName>mqtt_queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\MQTT\src\mqtt_queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>mqtt_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\MQTT\src\mqtt_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\MQTT\src\timer_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
