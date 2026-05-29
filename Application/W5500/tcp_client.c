@@ -70,20 +70,21 @@ int tcp_client_connect(void)
     g_target_ip[3] = ip_arr[3];
 #endif
 
-    LOGI("TCP: Connecting to %d.%d.%d.%d:%d...",
-          g_target_ip[0], g_target_ip[1], g_target_ip[2], g_target_ip[3],
-          MQTT_BROKER_PORT);
+    LOGI("TCP: DNS resolution complete, IP=%d.%d.%d.%d",
+          g_target_ip[0], g_target_ip[1], g_target_ip[2], g_target_ip[3]);
 
-    /* 创建 TCP Socket */
+    LOGI("TCP: Creating socket...");
     ret = socket(TCP_CLIENT_SOCKET, Sn_MR_TCP, 0, 0);
+    LOGI("TCP: socket() returned %d", ret);
     if (ret != TCP_CLIENT_SOCKET) {
         LOGE("TCP: socket() failed, ret=%d", ret);
         return -1;
     }
     LOGI("TCP: socket() created, sock=%d", TCP_CLIENT_SOCKET);
 
-    /* 连接服务器 */
+    LOGI("TCP: Connecting to server...");
     ret = connect(TCP_CLIENT_SOCKET, g_target_ip, MQTT_BROKER_PORT);
+    LOGI("TCP: connect() returned %d", ret);
     if (ret != SOCK_OK) {
         LOGE("TCP: connect() failed, ret=%d", ret);
         close(TCP_CLIENT_SOCKET);
@@ -96,14 +97,24 @@ int tcp_client_connect(void)
 }
 
 /**
- * @brief TCP Client 发送数据
+ * @brief TCP Client 发送数据 (非阻塞)
+ * @note 先检查发送缓冲区是否有足够空间，避免阻塞等待
  */
 int tcp_client_send(uint8_t* buf, uint16_t len)
 {
     int ret;
+    uint16_t free_size;
 
     if (!g_connected) {
         return -1;
+    }
+
+    /* 非阻塞模式：先检查发送缓冲区是否有足够空间 */
+    free_size = getSn_TX_FSR(TCP_CLIENT_SOCKET);
+    if (len > free_size) {
+        /* 发送缓冲区空间不足，立即返回，不阻塞 */
+        LOGW("TCP: send buffer full (need=%d, free=%d)", len, free_size);
+        return 0;
     }
 
     ret = send(TCP_CLIENT_SOCKET, buf, len);
@@ -117,17 +128,31 @@ int tcp_client_send(uint8_t* buf, uint16_t len)
 }
 
 /**
- * @brief TCP Client 接收数据
+ * @brief TCP Client 接收数据 (非阻塞)
+ * @note 先检查接收缓冲区是否有数据，避免阻塞等待
  */
 int tcp_client_recv(uint8_t* buf, uint16_t len)
 {
     int ret;
+    uint16_t rx_len;
 
     if (!g_connected) {
         return -1;
     }
 
-    ret = recv(TCP_CLIENT_SOCKET, buf, len);
+    /* 非阻塞模式：先检查接收缓冲区中有多少数据 */
+    rx_len = getSn_RX_RSR(TCP_CLIENT_SOCKET);
+    if (rx_len == 0) {
+        /* 没有数据，立即返回，不阻塞 */
+        return 0;
+    }
+
+    /* 只读取可用的数据量 */
+    if (rx_len > len) {
+        rx_len = len;
+    }
+
+    ret = recv(TCP_CLIENT_SOCKET, buf, rx_len);
     if (ret < 0) {
         LOGE("TCP: recv() failed, ret=%d", ret);
         g_connected = 0;

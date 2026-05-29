@@ -34,6 +34,7 @@ w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_ad
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_iwdg.h
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 w5500_project\w5500_conf.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h

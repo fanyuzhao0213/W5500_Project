@@ -27,21 +27,14 @@ Project File Date:  05/29/2026
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'w5500_project'
-compiling usart.c...
-../Core/Src/usart.c(205): warning:  #223-D: function "vsnprintf" declared implicitly
-      len = vsnprintf(buf, sizeof(buf), format, args);
-../Core/Src/usart.c: 1 warning, 0 errors
-compiling netconf.c...
-..\Application\W5500\netconf.c(12): warning:  #47-D: incompatible redefinition of macro "DEBUG_OUTPUT"  (declared at line 37 of "../Application/RTT/LOG.h")
-  #define DEBUG_OUTPUT DEBUG_RTT
-..\Application\W5500\netconf.c: 1 warning, 0 errors
-compiling tcp_client.c...
-compiling main.c...
 compiling freertos.c...
+../Core/Src/freertos.c(91): warning:  #177-D: variable "idle_count"  was declared but never referenced
+      static uint32_t idle_count = 0;
+../Core/Src/freertos.c: 1 warning, 0 errors
 linking...
-Program Size: Code=28836 RO-data=528 RW-data=240 ZI-data=17616  
+Program Size: Code=29768 RO-data=528 RW-data=244 ZI-data=32988  
 FromELF: creating hex file...
-"w5500_project\w5500_project.axf" - 0 Error(s), 2 Warning(s).
+"w5500_project\w5500_project.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -65,7 +58,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:10
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

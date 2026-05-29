@@ -3,16 +3,10 @@
  * @brief 独立看门狗 (IWDG) 管理器实现
  *
  * 功能:
- * - IWDG初始化
- * - 条件喂狗 (仅在MQTT正常运行时间隔喂狗)
- * - 防止卡死情况下继续喂狗
+ * - IWDG初始化 (HAL库)
+ * - 条件喂狗 (防止卡死情况下继续喂狗)
  *
  * @note 工业级设计: 禁止在系统异常时继续喂狗
- *
- * 使用方法:
- * 1. 系统初始化时调用 watchdog_manager_init()
- * 2. 在主循环或定时任务中定期调用 watchdog_manager_feed_auto()
- * 3. 仅当系统正常运行时喂狗
  */
 
 #include "watchdog_manager.h"
@@ -65,18 +59,15 @@ static uint8_t g_anomaly_count = 0;
  */
 void watchdog_manager_init(void)
 {
-    /* 检查是否已初始化 */
     if (g_watchdog_init) {
         LOGW("Watchdog: already initialized");
         return;
     }
 
-    /* 初始化IWDG句柄 */
     g_hiwdg.Instance = IWDG;
     g_hiwdg.Init.Prescaler = IWDG_PRESCALER;
     g_hiwdg.Init.Reload = IWDG_RELOAD_VALUE;
 
-    /* 初始化IWDG */
     if (HAL_IWDG_Init(&g_hiwdg) != HAL_OK) {
         LOGE("Watchdog: init failed");
         return;
@@ -87,52 +78,6 @@ void watchdog_manager_init(void)
     g_anomaly_count = 0;
 
     LOGI("Watchdog: initialized (timeout=10s)");
-}
-
-/**
- * @brief 喂狗 (条件喂狗)
- *
- * @param system_ok 系统运行正常标志
- * @param interval_ms 自上次调用以来的毫秒数
- *
- * @note 只有当system_ok=true且interval_ms在合理范围内时才喂狗
- */
-void watchdog_manager_feed(uint8_t system_ok, uint32_t interval_ms)
-{
-    /* 检查初始化 */
-    if (!g_watchdog_init) {
-        return;
-    }
-
-    /* 检查间隔是否合理 */
-    if (interval_ms < MIN_FEED_INTERVAL_MS) {
-        /* 间隔太短,忽略 */
-        return;
-    }
-
-    if (interval_ms > MAX_FEED_INTERVAL_MS) {
-        /* 间隔太长,说明可能有问题,记录异常 */
-        g_anomaly_count++;
-        LOGW("Watchdog: long interval %ums (anomaly_count=%d)", interval_ms, g_anomaly_count);
-
-        /* 如果连续多次间隔异常,不喂狗让系统复位 */
-        if (g_anomaly_count >= 3) {
-            LOGE("Watchdog: too many anomalies, stop feeding");
-            return;
-        }
-    } else {
-        /* 间隔正常,重置异常计数 */
-        g_anomaly_count = 0;
-    }
-
-    /* 只有系统正常时才喂狗 */
-    if (system_ok) {
-        HAL_IWDG_Refresh(&g_hiwdg);
-        g_last_feed_tick = HAL_GetTick();
-    } else {
-        /* 系统异常,不喂狗,让看门狗复位 */
-        LOGW("Watchdog: system not OK, not feeding");
-    }
 }
 
 /**

@@ -27,7 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "LOG.h"
-
+#include "stm32f4xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+IWDG_HandleTypeDef hiwdg;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,6 +60,112 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/**
+ *==============================================================================
+ * 看门狗 (IWDG) 配置
+ *==============================================================================
+ *
+ * IWDG 超时计算公式:
+ *   Timeout = (Prescaler × Reload) / LSI_Frequency
+ *
+ * IWDG 预分频设置:
+ *   IWDG_PRESCALER_4   = 0x00  -> 分频 4
+ *   IWDG_PRESCALER_8   = 0x01  -> 分频 8
+ *   IWDG_PRESCALER_16  = 0x02  -> 分频 16
+ *   IWDG_PRESCALER_32  = 0x03  -> 分频 32
+ *   IWDG_PRESCALER_64  = 0x04  -> 分频 64
+ *   IWDG_PRESCALER_128 = 0x05  -> 分频 128
+ *   IWDG_PRESCALER_256 = 0x06  -> 分频 256  (常用)
+ *
+ * LSI 频率: 约 32kHz (实际范围 30kHz ~ 40kHz)
+ *
+ * 计算示例 - 目标 10秒超时:
+ *   Reload = (Timeout × LSI_Freq) / Prescaler
+ *         = (10 × 32000) / 256
+ *         = 1250
+ *
+ * 常用超时配置:
+ *   1秒:  Reload = (1 × 32000) / 256 = 125
+ *   5秒:  Reload = (5 × 32000) / 256 = 625
+ *   10秒: Reload = (10 × 32000) / 256 = 1250
+ *   20秒: Reload = (20 × 32000) / 256 = 2500 (超过最大值 0xFFF)
+ *
+ *==============================================================================
+ */
+
+/**
+ * @brief  初始化看门狗 (10秒超时)
+ */
+void watchdog_init(void)
+{
+    hiwdg.Instance = IWDG;
+    hiwdg.Init.Prescaler = IWDG_PRESCALER_256;  /* 256分频 */
+    hiwdg.Init.Reload = 1250;                   /* 10秒 @32kHz */
+    HAL_IWDG_Init(&hiwdg);
+    LOGI("Watchdog: initialized (timeout=10s)");
+}
+
+/**
+ * @brief  喂狗 (刷新计数器)
+ */
+void watchdog_feed(void)
+{
+    HAL_IWDG_Refresh(&hiwdg);
+}
+
+/**
+ * @brief  系统软复位
+ */
+void system_reset(void)
+{
+    LOGI("System: software reset");
+    HAL_Delay(100);
+    NVIC_SystemReset();
+}
+
+/**
+ * @brief  打印系统重启原因
+ * @note   需要在 main 函数开始处调用
+ */
+void print_reset_cause(void)
+{
+    uint32_t csr_value = RCC->CSR;
+
+    LOGI("====================");
+    LOGI("Last Reset Cause:");
+
+    if (csr_value & RCC_CSR_LPWRRSTF) {
+        LOGI("  - Low-power reset (LPWRRSTF)");
+    }
+    if (csr_value & RCC_CSR_WWDGRSTF) {
+        LOGI("  - Window watchdog reset (WWDGRSTF)");
+    }
+    if (csr_value & RCC_CSR_IWDGRSTF) {
+        LOGI("  - Independent watchdog reset (IWDGRSTF)");
+    }
+    if (csr_value & RCC_CSR_SFTRSTF) {
+        LOGI("  - Software reset (SFTRSTF)");
+    }
+    if (csr_value & RCC_CSR_PORRSTF) {
+        LOGI("  - Power-on / POR reset (PORRSTF)");
+    }
+    if (csr_value & RCC_CSR_PINRSTF) {
+        LOGI("  - Pin reset (NRST pin) (PINRSTF)");
+    }
+    if (csr_value & RCC_CSR_BORRSTF) {
+        LOGI("  - Brown-out reset (BORRSTF)");
+    }
+    if ((csr_value & (RCC_CSR_LPWRRSTF | RCC_CSR_WWDGRSTF | RCC_CSR_IWDGRSTF |
+                      RCC_CSR_SFTRSTF | RCC_CSR_PORRSTF | RCC_CSR_PINRSTF |
+                      RCC_CSR_BORRSTF)) == 0) {
+        LOGI("  - Unknown or other reset cause");
+    }
+
+    LOGI("====================");
+
+    /* 清除复位标志，以便下次读取准确 */
+    __HAL_RCC_CLEAR_RESET_FLAGS();
+}
 
 /* USER CODE END 0 */
 
@@ -97,12 +203,16 @@ int main(void)
   MX_UART4_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  print_reset_cause();
   LOG_CLEAR();
   LOGI("======================================");
   LOGI("STM32F4 FreeRTOS RTT Project Started");
   LOGI("System Clock: 168 MHz");
   LOGI("RTT Log System Initialized");
   LOGI("======================================");
+
+  /* 初始化看门狗 */
+  watchdog_init();
 
   /* USER CODE END 2 */
 
@@ -226,3 +336,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+

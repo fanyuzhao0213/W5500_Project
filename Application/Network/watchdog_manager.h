@@ -3,9 +3,8 @@
  * @brief 独立看门狗 (IWDG) 管理器接口
  *
  * 功能:
- * - IWDG初始化
- * - 条件喂狗 (仅在MQTT正常运行时间隔喂狗)
- * - 防止卡死情况下继续喂狗
+ * - IWDG初始化 (直接寄存器操作)
+ * - 条件喂狗 (防止卡死情况下继续喂狗)
  *
  * @note 工业级设计: 禁止在系统异常时继续喂狗
  */
@@ -34,19 +33,8 @@ extern "C" {
 void watchdog_manager_init(void);
 
 /**
- * @brief 喂狗 (条件喂狗)
- * @param system_ok 系统运行正常标志
- * @param interval_ms 自上次调用以来的毫秒数
- *
- * @note 只有当system_ok=true且interval_ms在合理范围内时才喂狗
- *       这确保了如果系统卡在异常状态,看门狗会超时复位
- */
-void watchdog_manager_feed(uint8_t system_ok, uint32_t interval_ms);
-
-/**
  * @brief 喂狗 (自动喂狗)
- * @note 自动计算上次喂狗到现在的时间间隔,简化调用
- *       适用于在主循环中定期调用
+ * @note 简化调用,适用于空闲任务钩子
  */
 void watchdog_manager_feed_auto(void);
 
@@ -67,4 +55,3 @@ const char* watchdog_manager_get_status_str(void);
 #endif
 
 #endif /* WATCHDOG_MANAGER_H_ */
-

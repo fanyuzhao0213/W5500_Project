@@ -474,6 +474,8 @@ static int8_t connect_IO_6(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t ad
     if (sock_io_mode & (1 << sn)) {
         return SOCK_BUSY;
     }
+    /* 添加超时计数，避免无限循环 */
+    uint32_t timeout_count = 0;
     while (getSn_SR(sn) != SOCK_ESTABLISHED) {
         if (getSn_IR(sn) & Sn_IR_TIMEOUT) {
             setSn_IR(sn, Sn_IR_TIMEOUT);
@@ -482,6 +484,13 @@ static int8_t connect_IO_6(uint8_t sn, uint8_t * addr, uint16_t port, uint8_t ad
 
         if (getSn_SR(sn) == SOCK_CLOSED) {
             return SOCKERR_SOCKCLOSED;
+        }
+        
+        /* 添加延时，避免CPU空转 */
+        timeout_count++;
+        if (timeout_count >= 100000) {
+            /* 约1秒超时（取决于CPU速度） */
+            return SOCKERR_TIMEOUT;
         }
     }
 
