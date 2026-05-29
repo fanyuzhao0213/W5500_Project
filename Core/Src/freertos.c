@@ -32,6 +32,7 @@
 #include "tcp_client.h"
 #include "socket.h"
 #include "main.h"
+#include "mqtt_client.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,7 +59,7 @@ osThreadId NetworkTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void mqtt_message_callback(MessageData* md);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -88,7 +89,6 @@ void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackTy
 void vApplicationIdleHook(void)
 {
     extern IWDG_HandleTypeDef hiwdg;
-    static uint32_t idle_count = 0;
     HAL_IWDG_Refresh(&hiwdg);
 }
 /* USER CODE END GET_IDLE_TASK_MEMORY */
@@ -158,29 +158,36 @@ void StartDefaultTask(void const * argument)
   * @retval None
   */
 /* USER CODE END Header_StartNetworkTask */
+
+void mqtt_message_callback(MessageData* md)
+{
+    char* topic = (char*)md->topicName->lenstring.data;
+    char* payload = (char*)md->message->payload;
+
+    LOGI("TOPIC: %.*s", md->topicName->lenstring.len, topic);
+    LOGI("PAYLOAD: %.*s", (int)md->message->payloadlen, payload);
+}
+
 void StartNetworkTask(void const * argument)
 {
   extern IWDG_HandleTypeDef hiwdg;
   (void)argument;
   uint8_t version;
+  uint32_t last_publish_time = 0;
 
   LOGI("NetworkTask: step 1 - task started");
-  HAL_IWDG_Refresh(&hiwdg);  // 喂狗
+  HAL_IWDG_Refresh(&hiwdg);
 
-  /* 注册 SPI 回调函数 */
   LOGI("NetworkTask: step 2 - registering SPI cbfunc");
   wizchip_spi_cbfunc();
 
-  /* 初始化 W5500 socket 缓冲区和寄存器 */
   LOGI("NetworkTask: step 3 - calling wizchip_init");
   uint8_t snum[] = {16, 16, 16, 16, 16, 16, 16, 16};
   wizchip_init(snum, snum);
 
-  /* 等待 W5500 就绪 */
   LOGI("NetworkTask: step 4 - delay 100ms");
   HAL_Delay(100);
 
-  /* 验证 VERSIONR */
   LOGI("NetworkTask: step 5 - reading VERSIONR");
   version = getVERSIONR();
   LOGI("NetworkTask: step 6 - VERSIONR = 0x%02X", version);
@@ -192,62 +199,40 @@ void StartNetworkTask(void const * argument)
   }
 
   LOGI("NetworkTask: step 7 - calling NetConfig_Init");
-  /* 初始化网络配置 (静态IP) */
   NetConfig_Init();
 
-  LOGI("NetworkTask: step 8 - calling tcp_client_connect");
-  LOGI("NetworkTask: Connecting to MQTT broker...");
+  LOGI("NetworkTask: step 8 - initializing MQTT client");
+  mqtt_client_init();
 
-  /* 连接TCPBroker */
-  if (tcp_client_connect() != 0) {
-      LOGE("NetworkTask: TCP connect failed!");
-  } else {
-      LOGI("NetworkTask: TCP connected!");
+  LOGI("NetworkTask: step 9 - connecting to MQTT broker");
+  if (mqtt_client_connect() != MQTT_SUCCESS) {
+      LOGE("NetworkTask: MQTT connect failed!");
+      while(1) {
+          osDelay(1000);
+      }
   }
+
+  LOGI("NetworkTask: step 10 - subscribing to topic: %s", MQTT_SUBSCRIBE_TOPIC);
+  mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS0, mqtt_message_callback);
+
+  LOGI("NetworkTask: MQTT setup complete, entering main loop");
 
   for(;;)
   {
-//    /* 处理网络事件 */
-//    if (tcp_client_is_connected()) {
-//      uint8_t buf[256];
-//      int ret;
-//      static uint32_t loop_count = 0;
+    HAL_IWDG_Refresh(&hiwdg);
 
-//      loop_count++;
-//      LOGI("NetworkTask: loop %lu - starting", loop_count);
+    mqtt_client_loop(100);
 
-//      /* 发送测试数据 */
-//      LOGI("NetworkTask: calling tcp_client_send...");
-//      ret = tcp_client_send((uint8_t*)"Hello from STM32!", 18);
-//      if (ret > 0) {
-//        LOGI("NetworkTask: tcp_client_send OK, sent %d bytes", ret);
-//      } else if (ret == 0) {
-//        LOGW("NetworkTask: tcp_client_send returned 0 (buffer full)");
-//      } else {
-//        LOGE("NetworkTask: tcp_client_send FAILED, ret=%d", ret);
-//      }
+    if (HAL_GetTick() - last_publish_time >= MQTT_PUBLISH_INTERVAL) {
+        last_publish_time = HAL_GetTick();
+        mqtt_client_publish(MQTT_PUBLISH_TOPIC, "Hello STM32 MQTT", strlen("Hello STM32 MQTT"), QOS0);
+    }
 
-//      /* 接收服务器返回的数据 */
-//      LOGI("NetworkTask: calling tcp_client_recv...");
-//      ret = tcp_client_recv(buf, sizeof(buf));
-//      if (ret > 0) {
-//        buf[ret] = '\0';  /* 添加字符串结束符 */
-//        LOGI("NetworkTask: tcp_client_recv OK, received %d bytes: %s", ret, buf);
-//      } else if (ret == 0) {
-//        LOGI("NetworkTask: tcp_client_recv returned 0 (no data)");
-//      } else {
-//        LOGE("NetworkTask: tcp_client_recv FAILED, ret=%d", ret);
-//      }
-
-//      LOGI("NetworkTask: loop %lu - completed", loop_count);
-//    } else {
-//      LOGW("NetworkTask: not connected");
-//    }
-
-    osDelay(1000);
+    osDelay(10);
   }
 }
 
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
+

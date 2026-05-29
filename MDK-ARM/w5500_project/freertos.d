@@ -62,3 +62,15 @@ w5500_project\freertos.o: ../Application/W5500/w5500.h
 w5500_project\freertos.o: ../Application/W5500/wizchip_conf.h
 w5500_project\freertos.o: ../Application/W5500/tcp_client.h
 w5500_project\freertos.o: ../Application/W5500/socket.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_client.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_config.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTClient.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTPacket.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTConnect.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTPublish.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTSubscribe.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTUnsubscribe.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTFormat.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\StackTrace.h
+w5500_project\freertos.o: ..\Application\MQTT\paho\MQTTPacket.h
+w5500_project\freertos.o: ..\Application\MQTT\inc\mqtt_port.h

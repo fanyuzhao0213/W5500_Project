@@ -51,6 +51,16 @@
 "w5500_project\dhcp.o"
 "w5500_project\tcp_client.o"
 "w5500_project\dns.o"
+"w5500_project\mqtt_client.o"
+"w5500_project\mqtt_port.o"
+"w5500_project\mqttclient.o"
+"w5500_project\mqttconnectclient.o"
+"w5500_project\mqttdeserializepublish.o"
+"w5500_project\mqttformat.o"
+"w5500_project\mqttpacket.o"
+"w5500_project\mqttserializepublish.o"
+"w5500_project\mqttsubscribeclient.o"
+"w5500_project\mqttunsubscribeclient.o"
 --library_type=microlib --strict --scatter "w5500_project\w5500_project.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
