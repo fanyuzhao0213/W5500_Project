@@ -72,3 +72,4 @@ w5500_project\main.o: ..\Application\MQTT\paho\MQTTPacket.h
 w5500_project\main.o: ..\Application\MQTT\inc\mqtt_port.h
 w5500_project\main.o: ..\Application\MQTT\inc\mqtt_exception.h
 w5500_project\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+w5500_project\main.o: ../Core/Src/project_config.h

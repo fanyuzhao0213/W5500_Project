@@ -30,6 +30,7 @@
 #include "LOG.h"
 #include "mqtt_queue.h"
 #include "mqtt_exception.h"
+#include "project_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -228,7 +229,10 @@ int main(void)
   print_reset_cause();
   LOG_CLEAR();
   LOGI("======================================");
-  LOGI("STM32F4 FreeRTOS RTT Project Started");
+  LOGI("Product:     %s", PRODUCT_NAME);
+  LOGI("Version:     v%s", FIRMWARE_VERSION_STR);
+  LOGI("Hardware:    %s", HARDWARE_VERSION);
+  LOGI("Build Time:  %s", BUILD_TIME);
   LOGI("System Clock: 168 MHz");
   LOGI("RTT Log System Initialized");
   LOGI("======================================");
