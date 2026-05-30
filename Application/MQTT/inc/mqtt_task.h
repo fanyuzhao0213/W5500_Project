@@ -19,8 +19,10 @@ typedef enum {
     NET_STATE_MQTT_INIT,
     NET_STATE_MQTT_CONNECT,
     NET_STATE_MQTT_SUBSCRIBE,
+    NET_STATE_MQTT_RECONNECT,
     NET_STATE_RUNNING,
-    NET_STATE_ERROR
+    NET_STATE_ERROR,
+	NET_STATE_WAITTING,
 } net_state_t;
 
 /* 任务堆栈大小 */
@@ -55,6 +57,20 @@ net_state_t mqtt_task_get_state(void);
  * @return 1 运行中, 0 未连接
  */
 int mqtt_is_running(void);
+
+/**
+ * @brief 设置网络状态
+ * @note 由异常处理模块调用,用于切换到指定状态
+ * @param state 要设置的状态
+ */
+void mqtt_task_set_state(net_state_t state);
+
+/**
+ * @brief 设置 MQTT 运行标志
+ * @note 由异常处理模块调用
+ * @param running 1 运行中, 0 未连接
+ */
+void mqtt_task_set_running(uint8_t running);
 
 /**
  * @brief 网络任务 - W5500初始化和MQTT协议循环

@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "LOG.h"
 #include "mqtt_queue.h"
+#include "mqtt_exception.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,7 @@ TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 IWDG_HandleTypeDef hiwdg;
+volatile uint32_t g_tim2_ms_counter = 0;  /* TIM2 毫秒计数器 (每1ms增加) */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -241,6 +243,9 @@ int main(void)
       LOGI("MQTT Queue initialized");
   }
 
+  /* 初始化异常处理模块 */
+  mqtt_exception_init();
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -330,12 +335,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
     if (htim->Instance == TIM2)
     {
-        static uint32_t counter = 0;
-        counter++;
-        if (counter % 1000 == 0)   // 每 1 秒
-        {
-			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-        }
+        g_tim2_ms_counter++;  /* 毫秒计数器增加 */
     }
   /* USER CODE END Callback 1 */
 }

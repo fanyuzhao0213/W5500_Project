@@ -13,6 +13,9 @@
 /* TCP Client 使用的 Socket 号 */
 #define TCP_CLIENT_SOCKET   0
 
+/* DNS 使用的 Socket 号 (与 DHCP 共用 Socket 3) */
+#define DNS_SOCKET          3
+
 /* 目标服务器信息 */
 static uint8_t  g_target_ip[4] = {0};
 static uint8_t   g_connected = 0;
@@ -31,7 +34,7 @@ static int tcp_resolve_domain(const uint8_t* domain, uint8_t* ip)
     LOGI("DNS: Resolving domain: %s", domain);
 
     /* 初始化 DNS */
-    DNS_init(TCP_CLIENT_SOCKET, buf);
+    DNS_init(DNS_SOCKET, buf);
 
     /* 执行 DNS 解析 */
     int8_t ret = DNS_run(dns_ip, (uint8_t*)domain, ip);
@@ -85,6 +88,7 @@ int tcp_client_connect(void)
     LOGI("TCP: Connecting to server...");
     ret = connect(TCP_CLIENT_SOCKET, g_target_ip, MQTT_BROKER_PORT);
     LOGI("TCP: connect() returned %d", ret);
+
     if (ret != SOCK_OK) {
         LOGE("TCP: connect() failed, ret=%d", ret);
         close(TCP_CLIENT_SOCKET);
@@ -151,7 +155,6 @@ int tcp_client_recv(uint8_t* buf, uint16_t len)
 
     ret = recv(TCP_CLIENT_SOCKET, buf, rx_len);
     if (ret < 0) {
-        LOGE("TCP: recv() failed, ret=%d", ret);
         g_connected = 0;
         return -1;
     }

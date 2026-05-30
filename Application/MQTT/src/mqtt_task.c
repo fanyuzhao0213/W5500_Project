@@ -7,6 +7,7 @@
 #include "mqtt_client.h"
 #include "mqtt_queue.h"
 #include "mqtt_config.h"
+#include "mqtt_exception.h"
 #include "wizchip_conf.h"
 #include "netconf.h"
 #if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
@@ -54,6 +55,42 @@ net_state_t mqtt_task_get_state(void)
 int mqtt_is_running(void)
 {
     return g_mqtt_running;
+}
+
+/**
+ * @brief 设置网络状态
+ * @note 由异常处理模块调用,用于切换到指定状态
+ * @param state 要设置的状态 (传入 NET_STATE_INIT 表示完全重置)
+ */
+void mqtt_task_set_state(net_state_t state)
+{
+    LOGW("mqtt_task: setting state to %d", state);
+
+    if (state == NET_STATE_INIT) {
+        /* 完全重置 */
+        g_net_state = NET_STATE_INIT;
+        g_mqtt_running = 0;
+#if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
+        DHCP_stop();
+#endif
+        mqtt_exception_reset();
+        LOGI("mqtt_task: full reset complete");
+    } else {
+        /* 只切换状态 */
+        g_net_state = state;
+        LOGI("mqtt_task: state set complete");
+    }
+}
+
+/**
+ * @brief 设置 MQTT 运行标志
+ * @note 由异常处理模块调用
+ * @param running 1 运行中, 0 未连接
+ */
+void mqtt_task_set_running(uint8_t running)
+{
+    LOGW("mqtt_task: setting MQTT running to %d", running);
+    g_mqtt_running = running;
 }
 
 #if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
@@ -146,6 +183,9 @@ void mqtt_task_create(void)
     if (g_mqtt_rx_task_handle == NULL) {
         LOGE("MqttRxTask create failed");
     }
+
+    LOGI("mqtt_task_create: creating ExceptionTask...");
+    mqtt_exception_task_create();
 }
 
 /**
@@ -243,6 +283,7 @@ void StartNetworkTask(void const * argument)
                     g_net_state = NET_STATE_PHY_LINK_CHECK;
                 } else {
                     LOGE("NET_STATE_W5500_CHECK: W5500 ERROR! VERSIONR=0x%02X (expected 0x04)", version);
+                    mqtt_exception_report(EXCEPTION_W5500_ERROR);
                     g_net_state = NET_STATE_ERROR;
                 }
                 break;
@@ -278,8 +319,8 @@ void StartNetworkTask(void const * argument)
             case NET_STATE_DHCP_START: {
                 LOGI("NET_STATE_DHCP_START: Starting DHCP client...");
 
-                /* 初始化 DHCP (使用 Socket 0) */
-                DHCP_init(0, g_dhcp_buf);
+                /* 初始化 DHCP (使用 Socket 3) */
+                DHCP_init(3, g_dhcp_buf);
 
                 /* 注册 DHCP 回调函数 */
                 reg_dhcp_cbfunc(dhcp_ip_assign_callback,
@@ -289,7 +330,7 @@ void StartNetworkTask(void const * argument)
                 dhcp_retry_count = 0;
                 last_dhcp_tick = HAL_GetTick();
 
-                LOGI("NET_STATE_DHCP_START: DHCP client initialized on Socket 0");
+                LOGI("NET_STATE_DHCP_START: DHCP client initialized on Socket 3");
                 g_net_state = NET_STATE_DHCP_RUN;
                 break;
             }
@@ -322,23 +363,24 @@ void StartNetworkTask(void const * argument)
 
                     case DHCP_RUNNING:
                         /* DHCP 还在运行中，继续等待 */
-                        if (dhcp_retry_count % 10 == 0) {
-                            LOGI("NET_STATE_DHCP_RUN: DHCP running... (retry=%d)", dhcp_retry_count / 10);
+                        if (dhcp_retry_count % 100 == 0) {
+                            LOGI("NET_STATE_DHCP_RUN: DHCP running... (retry=%d)", dhcp_retry_count / 100);
                         }
                         dhcp_retry_count++;
 
                         /* 超时检查 (60秒) */
-                        if (dhcp_retry_count > 600) {
-                            LOGE("NET_STATE_DHCP_RUN: DHCP timeout after 60 seconds");
-                            DHCP_stop();
-                            g_net_state = NET_STATE_ERROR;
+                        if (dhcp_retry_count > 1000) {
+                            LOGE("NET_STATE_DHCP_RUN: DHCP timeout after 10 seconds");
+                            mqtt_exception_report(EXCEPTION_DHCP_TIMEOUT);
+                            g_net_state = NET_STATE_WAITTING;
                         }
                         break;
 
                     case DHCP_FAILED:
                         LOGE("NET_STATE_DHCP_RUN: DHCP failed!");
                         DHCP_stop();
-                        g_net_state = NET_STATE_ERROR;
+                        mqtt_exception_report(EXCEPTION_DHCP_FAILED);
+                        g_net_state = NET_STATE_WAITTING;
                         break;
 
                     case DHCP_STOPPED:
@@ -439,6 +481,7 @@ void StartNetworkTask(void const * argument)
                 /* 连接 MQTT Broker */
                 if (mqtt_client_connect() != MQTT_SUCCESS) {
                     LOGE("NET_STATE_MQTT_CONNECT: MQTT connection failed!");
+                    mqtt_exception_report(EXCEPTION_MQTT_DISCONNECTED);
                     g_net_state = NET_STATE_ERROR;
                 } else {
                     LOGI("NET_STATE_MQTT_CONNECT: MQTT TCP connected successfully!");
@@ -453,6 +496,7 @@ void StartNetworkTask(void const * argument)
                 /* 订阅主题 */
                 if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS1, mqtt_message_callback) != MQTT_SUCCESS) {
                     LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe failed!");
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
                     g_net_state = NET_STATE_ERROR;
                 } else {
                     LOGI("NET_STATE_MQTT_SUBSCRIBE: Subscribed to '%s' successfully!", MQTT_SUBSCRIBE_TOPIC);
@@ -464,6 +508,39 @@ void StartNetworkTask(void const * argument)
                     LOGI("========================================");
                     g_mqtt_running = 1;
                     g_net_state = NET_STATE_RUNNING;
+                }
+                break;
+            }
+
+            case NET_STATE_MQTT_RECONNECT: {
+                LOGW("NET_STATE_MQTT_RECONNECT: Reconnecting to MQTT Broker %s:%d...",
+                     MQTT_BROKER_IP, MQTT_BROKER_PORT);
+
+                /* 先断开已有连接 */
+                mqtt_client_disconnect();
+
+                /* 重新连接 MQTT Broker */
+                if (mqtt_client_connect() != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_RECONNECT: MQTT reconnection failed!");
+                    mqtt_exception_report(EXCEPTION_MQTT_DISCONNECTED);
+                    g_net_state = NET_STATE_ERROR;
+                } else {
+                    LOGI("NET_STATE_MQTT_RECONNECT: MQTT TCP reconnected successfully!");
+
+                    /* 重新订阅主题 */
+                    if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS1, mqtt_message_callback) != MQTT_SUCCESS) {
+                        LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe failed!");
+                        mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                        g_net_state = NET_STATE_ERROR;
+                    } else {
+                        LOGI("NET_STATE_MQTT_RECONNECT: Re-subscribed to '%s' successfully!", MQTT_SUBSCRIBE_TOPIC);
+                        LOGI("========================================");
+                        LOGI("MQTT: Successfully re-connected to broker!");
+                        LOGI("  Broker: %s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT);
+                        LOGI("========================================");
+                        g_mqtt_running = 1;
+                        g_net_state = NET_STATE_RUNNING;
+                    }
                 }
                 break;
             }
@@ -489,18 +566,19 @@ void StartNetworkTask(void const * argument)
                 /* 非阻塞 MQTT 循环处理 */
                 mqtt_client_loop(0);
 
-                /* 喂狗 */
-                HAL_IWDG_Refresh(&hiwdg);
-
                 /* 短延时让出 CPU */
                 osDelay(10);
                 break;
             }
-
+			case NET_STATE_WAITTING:
+				LOGI("NET_STATE_WAITTING: wait systerm dealwith error!");
+				osDelay(100);
+				break;
             case NET_STATE_ERROR:
             default: {
                 LOGE("NET_STATE_ERROR: Network error, retrying in 5 seconds...");
                 g_mqtt_running = 0;
+                mqtt_exception_report(EXCEPTION_NETWORK_ERROR);
 
 #if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
                 DHCP_stop();
@@ -515,7 +593,7 @@ void StartNetworkTask(void const * argument)
             }
         }
 
-        osDelay(1);
+        osDelay(10);
     }
 }
 

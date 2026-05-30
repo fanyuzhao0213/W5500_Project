@@ -35,10 +35,10 @@ static int mqtt_network_read(Network* n, unsigned char* buffer, int len, int tim
     int recv_len = 0;
     int rc;
     Timer timer;
-    
+
     TimerInit(&timer);
     TimerCountdownMS(&timer, timeout_ms);
-    
+
     do {
         rc = tcp_client_recv(buffer + recv_len, len - recv_len);
         if (rc > 0) {
@@ -50,7 +50,7 @@ static int mqtt_network_read(Network* n, unsigned char* buffer, int len, int tim
             HAL_Delay(1);
         }
     } while (recv_len < len && !TimerIsExpired(&timer));
-    
+
     return recv_len;
 }
 

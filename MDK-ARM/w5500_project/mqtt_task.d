@@ -32,6 +32,8 @@ w5500_project\mqtt_task.o: ..\Application\MQTT\inc\mqtt_port.h
 w5500_project\mqtt_task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 w5500_project\mqtt_task.o: ..\Application\MQTT\inc\mqtt_queue.h
 w5500_project\mqtt_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+w5500_project\mqtt_task.o: ..\Application\MQTT\inc\mqtt_exception.h
+w5500_project\mqtt_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 w5500_project\mqtt_task.o: ../Application/W5500/wizchip_conf.h
 w5500_project\mqtt_task.o: ../Application/W5500/w5500.h
 w5500_project\mqtt_task.o: ../Application/W5500/wizchip_conf.h

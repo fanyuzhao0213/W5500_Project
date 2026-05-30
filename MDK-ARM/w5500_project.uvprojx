@@ -743,6 +743,11 @@
               <FileType>1</FileType>
               <FilePath>..\Application\MQTT\src\timer_task.c</FilePath>
             </File>
+            <File>
+              <FileName>mqtt_exception.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\MQTT\src\mqtt_exception.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

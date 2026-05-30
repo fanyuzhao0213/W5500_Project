@@ -64,6 +64,7 @@
 "w5500_project\mqtt_queue.o"
 "w5500_project\mqtt_task.o"
 "w5500_project\timer_task.o"
+"w5500_project\mqtt_exception.o"
 "w5500_project\freertos_cli.o"
 "w5500_project\cli_task.o"
 "w5500_project\cli_commands.o"
