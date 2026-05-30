@@ -11,6 +11,8 @@
 #include "netconf.h"
 #include "LOG.h"
 #include "main.h"
+#include "w5500_conf.h"
+
 
 /* 外部变量声明 */
 extern IWDG_HandleTypeDef hiwdg;
@@ -258,3 +260,4 @@ void StartMQTTRxTask(void const * argument)
         }
     }
 }
+

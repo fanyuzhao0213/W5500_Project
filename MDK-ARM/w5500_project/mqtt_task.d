@@ -74,3 +74,4 @@ w5500_project\mqtt_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi
 w5500_project\mqtt_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 w5500_project\mqtt_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 w5500_project\mqtt_task.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+w5500_project\mqtt_task.o: ../Application/W5500/w5500_conf.h

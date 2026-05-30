@@ -30,6 +30,7 @@
 #include "mqtt_queue.h"
 #include "mqtt_config.h"
 #include "timer_task.h"
+#include "cli_task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,6 +119,10 @@ void MX_FREERTOS_Init(void) {
   /* 创建定时器任务 */
   LOGI("FREERTOS: creating Timer task...");
   timer_task_create();
+
+  /* 创建CLI任务 */
+  LOGI("FREERTOS: creating CLI task...");
+  cli_task_create();
 
   LOGI("FREERTOS: all tasks created, starting scheduler...");
 

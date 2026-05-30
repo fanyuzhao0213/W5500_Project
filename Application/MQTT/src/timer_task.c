@@ -139,32 +139,32 @@ void StartTimerTask(void const *argument)
     g_last_idle_tick = g_timer_list[0].last_tick;
 
     for (;;) {
-        current_tick = timer_task_get_tick();
+//        current_tick = timer_task_get_tick();
 
-        /* 遍历所有定时器任务 */
-        for (i = 0; i < TIMER_TASK_COUNT; i++) {
-            /* 检查是否使能 */
-            if (!g_timer_list[i].enable) {
-                continue;
-            }
+//        /* 遍历所有定时器任务 */
+//        for (i = 0; i < TIMER_TASK_COUNT; i++) {
+//            /* 检查是否使能 */
+//            if (!g_timer_list[i].enable) {
+//                continue;
+//            }
 
-            /* 检查是否到达执行时间 */
-            if ((current_tick - g_timer_list[i].last_tick) >= g_timer_list[i].interval_ms) {
-                /* 更新上次执行时间 */
-                g_timer_list[i].last_tick = current_tick;
+//            /* 检查是否到达执行时间 */
+//            if ((current_tick - g_timer_list[i].last_tick) >= g_timer_list[i].interval_ms) {
+//                /* 更新上次执行时间 */
+//                g_timer_list[i].last_tick = current_tick;
 
-                /* 执行回调 */
-                if (g_timer_list[i].callback != NULL) {
-                    g_timer_list[i].callback();
-                }
-            }
-        }
+//                /* 执行回调 */
+//                if (g_timer_list[i].callback != NULL) {
+//                    g_timer_list[i].callback();
+//                }
+//            }
+//        }
 
-        /* 空闲任务处理 */
-        if ((current_tick - g_last_idle_tick) >= 1) {  /* 1ms间隔 */
-            g_last_idle_tick = current_tick;
-            user_idle_task();
-        }
+//        /* 空闲任务处理 */
+//        if ((current_tick - g_last_idle_tick) >= 1) {  /* 1ms间隔 */
+//            g_last_idle_tick = current_tick;
+//            user_idle_task();
+//        }
 
         /* 让出CPU，1ms轮询一次 */
         osDelay(1);

@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F405xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../Application/RTT;../Application/W5500;..\Application\W5500;..\Application\W5500\Internet\DHCP;..\Application\W5500\Internet;..\Application\W5500\Internet\DNS;..\Application\MQTT\inc;..\Application\MQTT\paho</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../Application/RTT;../Application/W5500;..\Application\W5500;..\Application\W5500\Internet\DHCP;..\Application\W5500\Internet;..\Application\W5500\Internet\DNS;..\Application\MQTT\inc;..\Application\MQTT\paho;..\Application\FreeRTOS_CLI;..\Application\FreeRTOS_CLI\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -742,6 +742,26 @@
               <FileName>timer_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\MQTT\src\timer_task.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FreeRtos_CLI</GroupName>
+          <Files>
+            <File>
+              <FileName>FreeRTOS_CLI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\FreeRTOS_CLI\FreeRTOS_CLI.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\FreeRTOS_CLI\src\cli_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli_commands.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\FreeRTOS_CLI\src\cli_commands.c</FilePath>
             </File>
           </Files>
         </Group>
