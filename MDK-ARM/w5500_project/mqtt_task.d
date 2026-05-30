@@ -36,6 +36,7 @@ w5500_project\mqtt_task.o: ../Application/W5500/wizchip_conf.h
 w5500_project\mqtt_task.o: ../Application/W5500/w5500.h
 w5500_project\mqtt_task.o: ../Application/W5500/wizchip_conf.h
 w5500_project\mqtt_task.o: ../Application/W5500/netconf.h
+w5500_project\mqtt_task.o: ..\Application\W5500\Internet\DHCP\dhcp.h
 w5500_project\mqtt_task.o: ../Application/RTT/LOG.h
 w5500_project\mqtt_task.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 w5500_project\mqtt_task.o: ../Core/Inc/usart.h

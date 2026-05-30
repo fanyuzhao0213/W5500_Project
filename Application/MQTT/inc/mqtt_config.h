@@ -1,7 +1,33 @@
 #ifndef _MQTT_CONFIG_H_
 #define _MQTT_CONFIG_H_
 
-/* MQTT Broker 配置 */
+/* ============================================================
+ * 网络配置 - IP 地址获取方式
+ * ============================================================
+ * 选择以下模式之一：
+ *   - NET_CONFIG_DHCP     : 使用 DHCP 自动获取 IP
+ *   - NET_CONFIG_STATIC   : 使用静态 IP 配置
+ */
+/* ============================================================
+ * 网络配置模式枚举 (内部使用)
+ * ============================================================ */
+#define NET_CONFIG_DHCP        0
+#define NET_CONFIG_STATIC      1
+
+#define NET_CONFIG_MODE        NET_CONFIG_DHCP
+
+/* 静态 IP 配置参数 (仅在 NET_CONFIG_STATIC 模式下使用) */
+#define STATIC_IP_ADDR         "192.168.1.88"
+#define STATIC_SUBNET_MASK     "255.255.255.0"
+#define STATIC_GATEWAY         "192.168.1.1"
+#define STATIC_DNS             "8.8.8.8"
+
+/* MAC 地址 (固定) */
+#define MAC_ADDR               "00:08:DC:12:34:56"
+
+/* ============================================================
+ * MQTT Broker 配置
+ * ============================================================ */
 #define MQTT_BROKER_IP         "47.74.187.120"
 #define MQTT_BROKER_PORT       1883
 #define MQTT_CLIENT_ID         "stm32_w5500_client"
@@ -27,7 +53,7 @@
 /* 最大消息处理器数量 */
 #define MAX_MESSAGE_HANDLERS   5
 
-/* 平台头文件直接在MQTTClient.h中包含 */
+
 
 #endif /* _MQTT_CONFIG_H_ */
 

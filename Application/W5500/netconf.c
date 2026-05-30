@@ -9,7 +9,6 @@
 #include "dhcp.h"
 #include "LOG.h"
 
-#define DEBUG_OUTPUT DEBUG_RTT
 #include "LOG.h"
 
 /* 默认网络参数 (静态IP) */
