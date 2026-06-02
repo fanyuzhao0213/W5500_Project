@@ -74,3 +74,6 @@ w5500_project\freertos.o: ..\Application\MQTT\inc\timer_task.h
 w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 w5500_project\freertos.o: ..\Application\FreeRTOS_CLI\inc\cli_task.h
 w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+w5500_project\freertos.o: ..\Application\OTA\ota_client.h
+w5500_project\freertos.o: ..\Application\OTA\ota_config.h
+w5500_project\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

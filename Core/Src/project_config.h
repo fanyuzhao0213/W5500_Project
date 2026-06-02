@@ -14,7 +14,7 @@
 /* 固件版本 */
 #define FIRMWARE_VERSION_MAJOR    1
 #define FIRMWARE_VERSION_MINOR    1
-#define FIRMWARE_VERSION_PATCH    66
+#define FIRMWARE_VERSION_PATCH    88
 #define FIRMWARE_VERSION_BUILD    20260530
 
 /* 固件版本字符串 */

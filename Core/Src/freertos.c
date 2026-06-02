@@ -31,6 +31,7 @@
 #include "mqtt_config.h"
 #include "timer_task.h"
 #include "cli_task.h"
+#include "ota_client.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -123,6 +124,10 @@ void MX_FREERTOS_Init(void) {
   /* 创建CLI任务 */
   LOGI("FREERTOS: creating CLI task...");
   cli_task_create();
+
+  /* 创建 OTA 客户端任务 */
+  LOGI("FREERTOS: creating OTA task...");
+  ota_task_create();
 
   LOGI("FREERTOS: all tasks created, starting scheduler...");
 

@@ -163,7 +163,6 @@ flash_err_t flash_erase_range(uint32_t start_addr, uint32_t size)
     flash_err_t err = FLASH_OK;
     uint32_t start_sector, end_sector;
     uint32_t num_sectors;
-    uint32_t current_addr;
 
     if (!flash_is_valid_addr(start_addr) || !flash_is_valid_addr(start_addr + size - 1)) {
         return FLASH_INVALID_ADDR;

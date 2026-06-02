@@ -68,6 +68,10 @@
 "w5500_project\freertos_cli.o"
 "w5500_project\cli_task.o"
 "w5500_project\cli_commands.o"
+"w5500_project\flash_driver.o"
+"w5500_project\ota_client.o"
+"w5500_project\ota_example.o"
+"w5500_project\ota_params.o"
 --library_type=microlib --strict --scatter "w5500_project\w5500_project.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

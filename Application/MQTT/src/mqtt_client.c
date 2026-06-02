@@ -57,8 +57,6 @@ int mqtt_client_subscribe(const char* topicFilter, enum QoS qos, messageHandler 
         return MQTT_FAILURE;
     }
 
-    LOGI("MQTT: Subscribing to topic: %s", topicFilter);
-
     rc = MQTTSubscribe(&mqtt_client, topicFilter, qos, handler);
 
     if (rc == MQTT_SUCCESS) {

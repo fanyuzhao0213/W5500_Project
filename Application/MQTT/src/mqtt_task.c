@@ -8,6 +8,7 @@
 #include "mqtt_queue.h"
 #include "mqtt_config.h"
 #include "mqtt_exception.h"
+#include "ota_client.h"
 #include "wizchip_conf.h"
 #include "netconf.h"
 #if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
@@ -197,6 +198,8 @@ void mqtt_message_callback(MessageData *md)
     mqtt_msg_t msg;
     int topic_len, payload_len;
 
+    LOGI("MQTT callback: g_mqtt_running=%d", g_mqtt_running);
+
     if (!g_mqtt_running) {
         return;
     }
@@ -209,8 +212,8 @@ void mqtt_message_callback(MessageData *md)
 
     /* 获取载荷长度 */
     payload_len = (int)md->message->payloadlen;
-    if (payload_len >= 256) {
-        payload_len = 255;
+    if (payload_len >= 1024) {
+        payload_len = 1023;
     }
 
     /* 复制主题 */
@@ -225,7 +228,39 @@ void mqtt_message_callback(MessageData *md)
     /* 获取 QoS */
     msg.qos = md->message->qos;
 
-    /* 放入接收队列 (非阻塞) */
+    LOGI("MQTT: Received message on topic: %s", msg.topic);
+    LOGI("MQTT: Payload length: %d bytes", msg.len);
+
+    /* 检查是否是 OTA 命令主题 */
+    if (strstr(msg.topic, "/ota/cmd") != NULL) {
+        /* 直接放入 OTA 命令队列（超时0，不阻塞） */
+        if (ota_cmd_queue_put(&msg, 0) == 0) {
+            LOGI("MQTT: OTA command queued");
+        } else {
+            LOGE("MQTT: Failed to queue OTA command");
+        }
+        return;
+    }
+
+    /* 检查是否是 OTA 数据主题（分包传输） */
+    if (strstr(msg.topic, "/ota/data") != NULL) {
+        LOGI("MQTT: OTA data received, putting to OTA queue...");
+        /* 直接放入 OTA 命令队列 */
+        if (ota_cmd_queue_put(&msg, 0) == 0) {
+            LOGI("MQTT: OTA data queued");
+        } else {
+            LOGE("MQTT: Failed to queue OTA data");
+        }
+        return;
+    }
+
+    /* 检查是否是 OTA 响应主题 */
+    if (strstr(msg.topic, "/ota/response") != NULL) {
+        LOGI("MQTT: OTA response received: %s", msg.payload);
+        return;
+    }
+
+    /* 其他消息放入接收队列 (非阻塞) */
     if (mqtt_rx_queue_put(&msg, 0) != 0) {
         LOGW("MQTT RX: queue full, message dropped");
     }
@@ -368,6 +403,9 @@ void StartNetworkTask(void const * argument)
                         }
                         dhcp_retry_count++;
 
+                        /* 让出 CPU，允许其他任务运行 */
+                        osDelay(10);
+
                         /* 超时检查 (60秒) */
                         if (dhcp_retry_count > 1000) {
                             LOGE("NET_STATE_DHCP_RUN: DHCP timeout after 10 seconds");
@@ -491,24 +529,52 @@ void StartNetworkTask(void const * argument)
             }
 
             case NET_STATE_MQTT_SUBSCRIBE: {
-                LOGI("NET_STATE_MQTT_SUBSCRIBE: Subscribing to topic '%s'...", MQTT_SUBSCRIBE_TOPIC);
+                LOGI("NET_STATE_MQTT_SUBSCRIBE: Subscribing to topics...");
 
-                /* 订阅主题 */
-                if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS1, mqtt_message_callback) != MQTT_SUCCESS) {
-                    LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe failed!");
+                /* 订阅测试主题 */
+                if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe '%s' failed!", MQTT_SUBSCRIBE_TOPIC);
                     mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
                     g_net_state = NET_STATE_ERROR;
-                } else {
-                    LOGI("NET_STATE_MQTT_SUBSCRIBE: Subscribed to '%s' successfully!", MQTT_SUBSCRIBE_TOPIC);
-                    LOGI("========================================");
-                    LOGI("MQTT: Successfully connected to broker!");
-                    LOGI("  Broker: %s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT);
-                    LOGI("  Client ID: %s", MQTT_CLIENT_ID);
-                    LOGI("  Subscribed: %s", MQTT_SUBSCRIBE_TOPIC);
-                    LOGI("========================================");
-                    g_mqtt_running = 1;
-                    g_net_state = NET_STATE_RUNNING;
+                    break;
                 }
+                LOGI("  [1] Subscribed: %s", MQTT_SUBSCRIBE_TOPIC);
+
+                /* 订阅 OTA 命令主题 */
+                if (mqtt_client_subscribe(OTA_TOPIC_CMD, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe '%s' failed!", OTA_TOPIC_CMD);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [2] Subscribed: %s (OTA CMD)", OTA_TOPIC_CMD);
+
+                /* 订阅 OTA 数据主题（分包传输） */
+                if (mqtt_client_subscribe(OTA_TOPIC_DATA, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe '%s' failed!", OTA_TOPIC_DATA);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [3] Subscribed: %s (OTA DATA)", OTA_TOPIC_DATA);
+
+                /* 订阅 OTA 响应主题 */
+                if (mqtt_client_subscribe(OTA_TOPIC_RESPONSE, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_SUBSCRIBE: Subscribe '%s' failed!", OTA_TOPIC_RESPONSE);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [4] Subscribed: %s (OTA RESPONSE)", OTA_TOPIC_RESPONSE);
+
+                LOGI("========================================");
+                LOGI("MQTT: Successfully connected to broker!");
+                LOGI("  Broker: %s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT);
+                LOGI("  Client ID: %s", MQTT_CLIENT_ID);
+                LOGI("  Topics: %d subscribed", 4);
+                LOGI("========================================");
+                g_mqtt_running = 1;
+                g_net_state = NET_STATE_RUNNING;
                 break;
             }
 
@@ -524,24 +590,54 @@ void StartNetworkTask(void const * argument)
                     LOGE("NET_STATE_MQTT_RECONNECT: MQTT reconnection failed!");
                     mqtt_exception_report(EXCEPTION_MQTT_DISCONNECTED);
                     g_net_state = NET_STATE_ERROR;
-                } else {
-                    LOGI("NET_STATE_MQTT_RECONNECT: MQTT TCP reconnected successfully!");
-
-                    /* 重新订阅主题 */
-                    if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS1, mqtt_message_callback) != MQTT_SUCCESS) {
-                        LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe failed!");
-                        mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
-                        g_net_state = NET_STATE_ERROR;
-                    } else {
-                        LOGI("NET_STATE_MQTT_RECONNECT: Re-subscribed to '%s' successfully!", MQTT_SUBSCRIBE_TOPIC);
-                        LOGI("========================================");
-                        LOGI("MQTT: Successfully re-connected to broker!");
-                        LOGI("  Broker: %s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT);
-                        LOGI("========================================");
-                        g_mqtt_running = 1;
-                        g_net_state = NET_STATE_RUNNING;
-                    }
+                    break;
                 }
+
+                LOGI("NET_STATE_MQTT_RECONNECT: MQTT TCP reconnected successfully!");
+
+                /* 重新订阅测试主题 */
+                if (mqtt_client_subscribe(MQTT_SUBSCRIBE_TOPIC, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe '%s' failed!", MQTT_SUBSCRIBE_TOPIC);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [1] Re-subscribed: %s", MQTT_SUBSCRIBE_TOPIC);
+
+                /* 重新订阅 OTA 命令主题 */
+                if (mqtt_client_subscribe(OTA_TOPIC_CMD, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe '%s' failed!", OTA_TOPIC_CMD);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [2] Re-subscribed: %s (OTA CMD)", OTA_TOPIC_CMD);
+
+                /* 重新订阅 OTA 数据主题（分包传输） */
+                if (mqtt_client_subscribe(OTA_TOPIC_DATA, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe '%s' failed!", OTA_TOPIC_DATA);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [3] Re-subscribed: %s (OTA DATA)", OTA_TOPIC_DATA);
+
+                /* 重新订阅 OTA 响应主题 */
+                if (mqtt_client_subscribe(OTA_TOPIC_RESPONSE, QOS0, mqtt_message_callback) != MQTT_SUCCESS) {
+                    LOGE("NET_STATE_MQTT_RECONNECT: Re-subscribe '%s' failed!", OTA_TOPIC_RESPONSE);
+                    mqtt_exception_report(EXCEPTION_MQTT_SUBSCRIBE_FAILED);
+                    g_net_state = NET_STATE_ERROR;
+                    break;
+                }
+                LOGI("  [4] Re-subscribed: %s (OTA RESPONSE)", OTA_TOPIC_RESPONSE);
+
+                LOGI("========================================");
+                LOGI("MQTT: Successfully re-connected to broker!");
+                LOGI("  Broker: %s:%d", MQTT_BROKER_IP, MQTT_BROKER_PORT);
+                LOGI("  Topics: %d re-subscribed", 4);
+                LOGI("========================================");
+                g_mqtt_running = 1;
+                g_net_state = NET_STATE_RUNNING;
                 break;
             }
 
@@ -564,8 +660,11 @@ void StartNetworkTask(void const * argument)
 #endif
 
                 /* 非阻塞 MQTT 循环处理 */
-                mqtt_client_loop(0);
-
+                int loop_rc = mqtt_client_loop(0);
+                if (loop_rc < 0) {
+                    LOGE("+++++++MQTT loop failed, rc=%d, isconnected=%d", loop_rc, mqtt_client.isconnected);
+                }
+				
                 /* 短延时让出 CPU */
                 osDelay(10);
                 break;
@@ -636,6 +735,7 @@ void StartMQTTRxTask(void const * argument)
 
         /* 从接收队列获取消息 (超时500ms) */
         if (mqtt_rx_queue_get(&msg, 500) == osOK) {
+            /* 非 OTA 消息在这里处理 */
             LOGI("MQTT RxTask: topic=%s, payload=%.*s", msg.topic, msg.len, msg.payload);
         }
     }

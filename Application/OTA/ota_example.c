@@ -5,6 +5,7 @@
 
 #include "ota.h"
 #include <stdio.h>
+#include <string.h>
 
 // 示例1：Flash驱动基本操作
 void example_flash_driver(void)

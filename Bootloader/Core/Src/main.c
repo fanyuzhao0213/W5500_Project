@@ -113,7 +113,12 @@ int main(void)
 }
 
 /**
-  * @brief  Bootloader main logic
+  * @brief  Bootloader 主逻辑
+  *
+  * 流程：
+  * 1. 读取 OTA 参数
+  * 2. 处理 OTA 升级/回滚逻辑
+  * 3. 启动应用程序
   */
 static void bootloader_main(void)
 {
@@ -122,17 +127,17 @@ static void bootloader_main(void)
 
     PRINTF("\r\n[BOOT] Reading OTA parameters...\r\n");
 
-    // 读取OTA参数
+    // 从 Flash 读取 OTA 参数
     ret = bootloader_read_params(&params);
     if (ret != 0) {
         PRINTF("[WARN] OTA params not found, using defaults\r\n");
 
-        // 使用默认参数，尝试启动App-A
-        params.ota_flag = OTA_FLAG_NORMAL;
-        params.active_app = APP_A;
-        params.boot_count = 0;
-        params.app_a_valid = 1;
-        params.app_b_valid = 0;
+        // 首次启动，使用默认参数
+        params.ota_flag = OTA_FLAG_NORMAL;      // 正常启动模式
+        params.active_app = APP_A;              // 默认启动 App-A
+        params.boot_count = 0;                  // 启动计数清零
+        params.app_a_valid = 1;                 // App-A 有效
+        params.app_b_valid = 0;                 // App-B 无效
     } else {
         PRINTF("[INFO] OTA params loaded:\r\n");
         PRINTF("       OTA Flag: %d\r\n", params.ota_flag);
@@ -142,12 +147,19 @@ static void bootloader_main(void)
         PRINTF("       App-B Valid: %d\r\n", params.app_b_valid);
     }
 
-    // 处理OTA逻辑
+    // 处理 OTA 逻辑（升级/回滚）
     bootloader_handle_ota(&params);
 }
 
 /**
-  * @brief  Handle OTA upgrade logic
+  * @brief  处理 OTA 升级和回滚逻辑
+  *
+  * 主要流程：
+  * 1. 确定要启动的应用分区
+  * 2. 验证固件有效性
+  * 3. 处理 OTA 升级验证
+  * 4. 处理 OTA 回滚
+  * 5. 跳转到应用程序
   */
 static void bootloader_handle_ota(ota_params_t *params)
 {
@@ -155,7 +167,7 @@ static void bootloader_handle_ota(ota_params_t *params)
     firmware_header_t header;
     int ret;
 
-    // 确定要启动的应用地址
+    // 根据激活标志和有效性确定要启动的应用地址
     if (params->active_app == APP_B && params->app_b_valid) {
         app_addr = APP_B_ADDR;
         PRINTF("[INFO] Selected App-B (0x%08lX)\r\n", app_addr);
@@ -164,7 +176,7 @@ static void bootloader_handle_ota(ota_params_t *params)
         PRINTF("[INFO] Selected App-A (0x%08lX)\r\n", app_addr);
     }
 
-    // 验证固件
+    // 验证固件有效性（栈指针、复位向量）
     PRINTF("[BOOT] Validating firmware...\r\n");
     ret = bootloader_validate_firmware(app_addr, &header);
 
@@ -173,13 +185,14 @@ static void bootloader_handle_ota(ota_params_t *params)
         PRINTF("[ERROR] -1: Invalid stack pointer\r\n");
         PRINTF("[ERROR] -2: Invalid reset vector\r\n");
 
-        // 如果App-A无效，尝试App-B
+        // 如果 App-A 无效，尝试 App-B 作为备份
         if (app_addr == APP_A_ADDR && params->app_b_valid) {
             PRINTF("[INFO] Trying App-B as fallback...\r\n");
             app_addr = APP_B_ADDR;
             ret = bootloader_validate_firmware(app_addr, &header);
         }
 
+        // 如果两个分区都无效，进入错误状态
         if (ret != 0) {
             PRINTF("[ERROR] No valid firmware found!\r\n");
             led_set_state(LED_ERROR);
@@ -197,40 +210,98 @@ static void bootloader_handle_ota(ota_params_t *params)
         PRINTF("[INFO] ARM application validated (no header)\r\n");
     }
 
-    // 检查OTA标志（仅在有固件头时处理OTA逻辑）
-    if (header.size > 0 && params->ota_flag == OTA_FLAG_PENDING) {
+    // OTA 升级处理逻辑
+    // 当 ota_flag = PENDING 时，表示新固件首次启动，需要验证稳定性
+    if (params->ota_flag == OTA_FLAG_PENDING) {
         PRINTF("[OTA] Upgrade pending, verifying new firmware...\r\n");
         led_set_state(LED_UPGRADE);
 
-        // 升级验证逻辑：新固件首次启动，增加计数
-        PRINTF("[OTA] First boot of new firmware\r\n");
-    }
+        // 启动计数增加
+        params->boot_count++;
+        PRINTF("[OTA] Boot count: %d/%d\r\n", params->boot_count, params->max_boot_count);
 
-    // 检查是否需要回滚（仅在有固件头时处理）
-    if (header.size > 0 && params->active_app == APP_B && params->ota_flag == OTA_FLAG_SUCCESS) {
-        // 新固件已验证成功
+        // 达到最大验证次数，确认升级成功
         if (params->boot_count >= params->max_boot_count) {
             PRINTF("[OTA] New firmware verified successfully!\r\n");
-            // 这里可以标记App-B为默认启动
+            params->ota_flag = OTA_FLAG_SUCCESS;   // 设置为升级成功
+            params->boot_count = 0;                 // 重置启动计数
+
+            // 更新分区有效性标志
+            if (params->active_app == APP_A) {
+                params->app_a_valid = 1;  // App-A 有效
+                params->app_b_valid = 0;  // App-B 无效
+            } else {
+                params->app_b_valid = 1;  // App-B 有效
+                params->app_a_valid = 0;  // App-A 无效
+            }
+
+            // 写入 OTA 参数到 Flash
+            bootloader_write_params(params);
+            PRINTF("[OTA] Upgrade completed!\r\n");
+        } else {
+            // 继续验证，保存当前启动计数
+            bootloader_write_params(params);
+            PRINTF("[OTA] Continuing verification...\r\n");
         }
     }
 
-    // 启动应用
+    // OTA 回滚处理逻辑
+    // 当 ota_flag = ROLLBACK 时，表示新固件有问题，需要回滚到旧版本
+    if (params->ota_flag == OTA_FLAG_ROLLBACK) {
+        PRINTF("[OTA] Rollback triggered!\r\n");
+        led_set_state(LED_ERROR);
+
+        // 如果当前在 App-B，回滚到 App-A
+        if (params->active_app == APP_B && params->app_a_valid) {
+            PRINTF("[OTA] Rolling back to App-A...\r\n");
+            params->active_app = APP_A;            // 切换到 App-A
+            params->ota_flag = OTA_FLAG_NORMAL;    // 恢复正常模式
+            params->boot_count = 0;                // 重置启动计数
+            bootloader_write_params(params);
+
+            app_addr = APP_A_ADDR;
+        }
+        // 如果当前在 App-A，回滚到 App-B
+        else if (params->active_app == APP_A && params->app_b_valid) {
+            PRINTF("[OTA] Rolling back to App-B...\r\n");
+            params->active_app = APP_B;            // 切换到 App-B
+            params->ota_flag = OTA_FLAG_NORMAL;    // 恢复正常模式
+            params->boot_count = 0;                // 重置启动计数
+            bootloader_write_params(params);
+
+            app_addr = APP_B_ADDR;
+        } else {
+            // 没有有效的固件可以回滚，进入错误状态
+            PRINTF("[ERROR] No valid firmware to rollback!\r\n");
+            while (1) {
+                led_set_state(LED_ERROR);
+            }
+        }
+    }
+
+    // 跳转到应用程序
     bootloader_boot_app(app_addr);
 }
 
 /**
-  * @brief  Boot the application
+  * @brief  启动应用程序
+  * @param  app_addr 应用程序起始地址
+  *
+  * 流程：
+  * 1. 打印启动信息
+  * 2. 关闭 LED
+  * 3. 跳转到应用程序
+  * 4. 如果跳转失败，进入错误状态
   */
 static void bootloader_boot_app(uint32_t app_addr)
 {
     PRINTF("[BOOT] Jumping to application at 0x%08lX...\r\n", app_addr);
     PRINTF("====================================\r\n\r\n");
 
-    // 关闭LED
+    // 关闭 LED
     HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
-    // 跳转到应用
+    // 跳转到应用程序（设置栈指针、VTOR、跳转到 Reset Handler）
     bootloader_jump_to_app(app_addr);
 
     // 如果跳转失败，进入死循环

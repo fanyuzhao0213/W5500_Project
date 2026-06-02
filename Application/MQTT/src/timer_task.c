@@ -93,22 +93,22 @@ void user_mqtt_publish(void)
     mqtt_msg_t pub_msg;
     uint32_t current_tick = timer_task_get_tick();
 
-    if (!mqtt_is_running()) {
-        return;
-    }
+//    if (!mqtt_is_running()) {
+//        return;
+//    }
 
-    /* 准备发送数据 */
-    memset(&pub_msg, 0, sizeof(pub_msg));
-    snprintf(pub_msg.topic, sizeof(pub_msg.topic), "%s", MQTT_PUBLISH_TOPIC);
-    snprintf(pub_msg.payload, sizeof(pub_msg.payload),
-             "{\"uptime_ms\":%lu}", (unsigned long)current_tick);
-    pub_msg.len = strlen(pub_msg.payload);
-    pub_msg.qos = QOS1;
+//    /* 准备发送数据 */
+//    memset(&pub_msg, 0, sizeof(pub_msg));
+//    snprintf(pub_msg.topic, sizeof(pub_msg.topic), "%s", MQTT_PUBLISH_TOPIC);
+//    snprintf(pub_msg.payload, sizeof(pub_msg.payload),
+//             "{\"uptime_ms\":%lu}", (unsigned long)current_tick);
+//    pub_msg.len = strlen(pub_msg.payload);
+//    pub_msg.qos = QOS1;
 
-    /* 放入发送队列 */
-    if (mqtt_tx_queue_put(&pub_msg, 0) == 0) {
-        LOGI("TimerTask: publish queued success!");
-    }
+//    /* 放入发送队列 */
+//    if (mqtt_tx_queue_put(&pub_msg, 0) == 0) {
+//        LOGI("TimerTask: publish queued success!");
+//    }
 }
 
 /**

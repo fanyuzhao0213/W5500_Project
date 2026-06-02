@@ -230,7 +230,7 @@ int main(void)
   LOG_CLEAR();
   LOGI("======================================");
   LOGI("Product:     %s", PRODUCT_NAME);
-  LOGI("Version:     v%s", FIRMWARE_VERSION_STR);
+  LOGI("Version:     V%s", FIRMWARE_VERSION_STR);
   LOGI("Hardware:    %s", HARDWARE_VERSION);
   LOGI("Build Time:  %s", BUILD_TIME);
   LOGI("System Clock: 168 MHz");

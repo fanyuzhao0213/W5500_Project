@@ -576,6 +576,7 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns) {
             ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
             break;
         }
+        
         // Check Timeout
         ret_check_timeout = check_DNS_timeout();
         if (ret_check_timeout < 0) {

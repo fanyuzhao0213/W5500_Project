@@ -53,7 +53,62 @@
 /* 最大消息处理器数量 */
 #define MAX_MESSAGE_HANDLERS   5
 
+/* ============================================================
+ * OTA 升级配置
+ * ============================================================ */
 
+/* 设备 ID (用于构建 OTA 主题)
+ * 格式：w5500_XXX
+ * 用途：区分不同设备，构建设备专属主题
+ */
+#define OTA_DEVICE_ID          "w5500_001"
+
+/* OTA 主题定义
+ *
+ * 设备订阅主题：
+ *   - OTA_TOPIC_CMD: 接收服务器下发的 OTA 命令
+ *   - OTA_TOPIC_DATA: 接收固件数据块（分包传输）
+ *   - OTA_TOPIC_RESPONSE: 接收服务器的响应
+ *
+ * 设备发布主题：
+ *   - OTA_TOPIC_STATUS: 上报 OTA 状态和进度
+ *   - OTA_TOPIC_ACK: 发送数据块接收确认
+ */
+#define OTA_TOPIC_CMD          "device/" OTA_DEVICE_ID "/ota/cmd"
+#define OTA_TOPIC_STATUS       "device/" OTA_DEVICE_ID "/ota/status"
+#define OTA_TOPIC_DATA         "device/" OTA_DEVICE_ID "/ota/data"
+#define OTA_TOPIC_ACK          "device/" OTA_DEVICE_ID "/ota/ack"
+#define OTA_TOPIC_RESPONSE     "device/" OTA_DEVICE_ID "/ota/response"
+
+/* OTA 服务器主题（可选）
+ * 用于服务器端订阅和发布
+ */
+#define OTA_SERVER_CMD         "server/ota/cmd"
+#define OTA_SERVER_RESPONSE    "server/ota/response"
+
+/* OTA 配置参数
+ *
+ * OTA_FIRMWARE_MAX_SIZE: 固件最大大小（字节）
+ *   - 受限于 Flash 分区大小（480KB）
+ *
+ * OTA_DOWNLOAD_TIMEOUT: 下载超时时间（毫秒）
+ *   - 网络不稳定时可适当增加
+ *
+ * OTA_MAX_RETRY_COUNT: 最大重试次数
+ *   - 下载失败时的重试次数
+ *
+ * OTA_PROGRESS_INTERVAL: 进度上报间隔（百分比）
+ *   - 每 10% 上报一次进度
+ *
+ * OTA_CHUNK_SIZE: 数据块大小（字节）
+ *   - MQTT 消息负载限制，建议 4KB
+ *   - 过大会导致传输失败，过小效率低
+ */
+#define OTA_FIRMWARE_MAX_SIZE  (480 * 1024)   // 480KB
+#define OTA_DOWNLOAD_TIMEOUT   30000          // 30 秒
+#define OTA_MAX_RETRY_COUNT    3              // 最多重试 3 次
+#define OTA_PROGRESS_INTERVAL  10             // 每 10% 上报一次
+#define OTA_CHUNK_SIZE         (4 * 1024)     // 4KB 数据块
 
 #endif /* _MQTT_CONFIG_H_ */
 
