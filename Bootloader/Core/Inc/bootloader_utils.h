@@ -13,6 +13,7 @@ uint32_t bootloader_crc32_flash(uint32_t addr, uint32_t size);
 
 // OTA参数操作
 int bootloader_read_params(ota_params_t *params);
+int bootloader_write_params(ota_params_t *params);
 
 // 固件验证
 int bootloader_validate_firmware(uint32_t app_addr, firmware_header_t *header);

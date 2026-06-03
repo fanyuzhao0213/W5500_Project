@@ -1,7 +1,7 @@
 Dependencies for Project 'Bootloader', Target 'Bootloader': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
 F (startup_stm32f405xx.s)(0x6A1A8A98)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 536" --pd "_RTE_ SETA 1" --pd "STM32F405xx SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f405xx.lst --xref -o bootloader\startup_stm32f405xx.o --depend bootloader\startup_stm32f405xx.d)
-F (../Core/Src/main.c)(0x6A1A9B2A)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\main.o --omf_browse bootloader\main.crf --depend bootloader\main.d)
+F (../Core/Src/main.c)(0x6A1FA28E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\main.o --omf_browse bootloader\main.crf --depend bootloader\main.d)
 I (../Core/Inc/main.h)(0x6A1A95C4)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1A88E2)
@@ -34,7 +34,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
 I (../Core/Inc/usart.h)(0x6A1A89E1)
 I (../Core/Inc/gpio.h)(0x6A1A88E0)
 I (../Core/Inc/bootloader_config.h)(0x6A1A962C)
-I (../Core/Inc/bootloader_utils.h)(0x6A1A8B58)
+I (../Core/Inc/bootloader_utils.h)(0x6A1FA23B)
 F (../Core/Src/gpio.c)(0x6A1A88E0)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\gpio.o --omf_browse bootloader\gpio.crf --depend bootloader\gpio.d)
 I (../Core/Inc/gpio.h)(0x6A1A88E0)
 I (../Core/Inc/main.h)(0x6A1A95C4)
@@ -160,8 +160,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h)(0x68E8E71E
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
-F (..\Core\Src\bootloader_utils.c)(0x6A1A9E72)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\bootloader_utils.o --omf_browse bootloader\bootloader_utils.crf --depend bootloader\bootloader_utils.d)
-I (../Core/Inc/bootloader_utils.h)(0x6A1A8B58)
+F (..\Core\Src\bootloader_utils.c)(0x6A1FA280)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\bootloader_utils.o --omf_browse bootloader\bootloader_utils.crf --depend bootloader\bootloader_utils.d)
+I (../Core/Inc/bootloader_utils.h)(0x6A1FA23B)
 I (../Core/Inc/bootloader_config.h)(0x6A1A962C)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x68E8E71E)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A1A88E2)
@@ -191,7 +191,6 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h)(0x68E8E71E
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x68E8E71E)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x68E8E71E)
-I (D:\Keil_v5\ARM\ARMCC\include\string.h)(0x6025237E)
 I (../Core/Inc/main.h)(0x6A1A95C4)
 I (../Core/Inc/usart.h)(0x6A1A89E1)
 F (../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c)(0x68E8E71D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Bootloader-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\Users\Tokin_hardware\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.15.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F405xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F405xx-o bootloader\stm32f4xx_hal_tim.o --omf_browse bootloader\stm32f4xx_hal_tim.crf --depend bootloader\stm32f4xx_hal_tim.d)

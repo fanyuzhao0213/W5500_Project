@@ -1,7 +1,66 @@
 #include "bootloader_utils.h"
-#include <string.h>
 #include "main.h"
 #include "usart.h"
+
+// Flash解锁/加锁
+static void flash_unlock(void)
+{
+    HAL_FLASH_Unlock();
+}
+
+static void flash_lock(void)
+{
+    HAL_FLASH_Lock();
+}
+
+// 写入OTA参数到Flash
+int bootloader_write_params(ota_params_t *params)
+{
+    if (params == NULL) {
+        return -1;
+    }
+
+    // 确保魔数正确
+    params->magic_number = OTA_PARAMS_MAGIC;
+
+    // 解锁Flash
+    flash_unlock();
+
+    // 注意：0x080F8000 和 0x080FC000 都在扇区 11 (0x080E0000-0x080FFFFF)
+    // 同一扇区不能重复擦除，所以一次性写入两个区域
+
+    // 擦除扇区 11
+    FLASH_EraseInitTypeDef erase_init;
+    uint32_t sector_error;
+    erase_init.TypeErase = FLASH_TYPEERASE_SECTORS;
+    erase_init.Banks = FLASH_BANK_1;
+    erase_init.Sector = FLASH_SECTOR_11;
+    erase_init.NbSectors = 1;
+    erase_init.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+
+    HAL_FLASHEx_Erase(&erase_init, &sector_error);
+
+    // 写入备份区
+    uint32_t *src = (uint32_t *)params;
+    uint32_t dst = OTA_PARAMS_BACKUP_ADDR;
+    for (uint32_t i = 0; i < sizeof(ota_params_t) / 4; i++) {
+        HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, dst, src[i]);
+        dst += 4;
+    }
+
+    // 写入主区（同一扇区，无需再擦除）
+    src = (uint32_t *)params;
+    dst = OTA_PARAMS_ADDR;
+    for (uint32_t i = 0; i < sizeof(ota_params_t) / 4; i++) {
+        HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, dst, src[i]);
+        dst += 4;
+    }
+
+    // 加锁Flash
+    flash_lock();
+
+    return 0;
+}
 
 // CRC32表
 static const uint32_t crc32_table[256] = {

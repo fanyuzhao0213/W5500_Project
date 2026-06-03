@@ -33,6 +33,56 @@ except ImportError:
 CLIENT_ID = "ota_server_001"
 CHUNK_SIZE = 4 * 1024
 
+# OTA阶段定义（与设备端保持一致）
+OTA_STAGE_IDLE = 0           # 空闲状态，无升级任务
+OTA_STAGE_PREPARING = 1      # 准备中（擦除Flash等准备工作）
+OTA_STAGE_DOWNLOADING = 2    # 正在下载固件
+OTA_STAGE_VERIFYING = 3      # 正在验证固件 CRC32
+OTA_STAGE_INSTALLING = 4     # 正在安装固件
+OTA_STAGE_SUCCESS = 5        # 升级成功
+OTA_STAGE_FAILED = 6         # 升级失败
+
+OTA_STAGE_NAMES = {
+    OTA_STAGE_IDLE: "空闲",
+    OTA_STAGE_PREPARING: "准备中",
+    OTA_STAGE_DOWNLOADING: "下载中",
+    OTA_STAGE_VERIFYING: "校验中",
+    OTA_STAGE_INSTALLING: "安装中",
+    OTA_STAGE_SUCCESS: "成功",
+    OTA_STAGE_FAILED: "失败"
+}
+
+# OTA错误码定义
+OTA_ERR_OK = 0               # 正常，无错误
+OTA_ERR_INVALID_PARAM = 1    # 参数无效
+OTA_ERR_NO_MEMORY = 2        # 内存不足
+OTA_ERR_FLASH_WRITE = 3      # Flash 写入失败
+OTA_ERR_FLASH_ERASE = 4      # Flash 擦除失败
+OTA_ERR_CRC_MISMATCH = 5     # CRC32 校验失败
+OTA_ERR_DOWNLOAD_FAILED = 6  # 下载失败
+OTA_ERR_INVALID_FIRMWARE = 7 # 固件无效
+OTA_ERR_ALREADY_LATEST = 8   # 已是最新版本
+OTA_ERR_NETWORK_ERROR = 9    # 网络错误
+
+OTA_ERROR_MESSAGES = {
+    OTA_ERR_OK: "成功",
+    OTA_ERR_INVALID_PARAM: "参数无效",
+    OTA_ERR_NO_MEMORY: "内存不足",
+    OTA_ERR_FLASH_WRITE: "Flash写入失败",
+    OTA_ERR_FLASH_ERASE: "Flash擦除失败",
+    OTA_ERR_CRC_MISMATCH: "CRC32校验失败",
+    OTA_ERR_DOWNLOAD_FAILED: "下载失败",
+    OTA_ERR_INVALID_FIRMWARE: "固件无效",
+    OTA_ERR_ALREADY_LATEST: "已是最新版本",
+    OTA_ERR_NETWORK_ERROR: "网络错误"
+}
+
+# 超时配置
+ACK_TIMEOUT_MS = 5000        # ACK超时时间（5秒）
+MAX_RETRY_COUNT = 5          # 最大重试次数
+COMMAND_TIMEOUT_MS = 10000   # 命令超时时间（10秒）
+TOTAL_UPGRADE_TIMEOUT_MS = 5 * 60 * 1000  # 整个升级流程超时（5分钟）
+
 
 class FirmwareLoader:
     """固件加载器 - 支持HEX和BIN格式"""
@@ -96,11 +146,13 @@ class MQTTWorker(QThread):
     error_occurred = pyqtSignal(str)
     log_message = pyqtSignal(str)
 
-    def __init__(self, broker_address, broker_port, client_id):
+    def __init__(self, broker_address, broker_port, client_id, username=None, password=None):
         super().__init__()
         self.broker_address = broker_address
         self.broker_port = broker_port
         self.client_id = client_id
+        self.username = username
+        self.password = password
         self.mqtt_client = None
         self.running = True
 
@@ -122,6 +174,11 @@ class MQTTWorker(QThread):
         try:
             self.log_message.emit(f"[MQTT-WORKER] 尝试连接到 {self.broker_address}:{self.broker_port}")
             self.log_message.emit(f"[MQTT-WORKER] 连接超时设置: 60秒")
+
+            # 设置用户名密码（如果提供）
+            if self.username and self.password:
+                self.mqtt_client.username_pw_set(self.username, self.password)
+                self.log_message.emit(f"[MQTT-WORKER] 已设置用户名: {self.username}")
 
             # 尝试连接
             self.mqtt_client.connect(self.broker_address, self.broker_port, 60)
@@ -230,7 +287,7 @@ class MQTTWorker(QThread):
             self.log_message.emit(f"[MQTT-WORKER] 订阅主题: {topic} (QoS: {qos})")
             self.mqtt_client.subscribe(topic, qos)
 
-    def publish(self, topic, payload, qos=1):
+    def publish(self, topic, payload, qos=0):
         if self.mqtt_client:
             self.mqtt_client.publish(topic, payload, qos)
 
@@ -246,9 +303,11 @@ class OTAServer(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # 默认配置 - 使用EMQX公共MQTT服务器
-        self.broker_address = "broker.emqx.io"
-        self.broker_port = 1883
+        # 默认配置 - 使用指定MQTT服务器
+        self.broker_address = "app-management-server.washer-saas.istarix.com"
+        self.broker_port = 20118
+        self.broker_username = "washer_saas_mu"
+        self.broker_password = "$5ywq8bye5e7ah2hb*"
         self.device_id = "w5500_001"
 
         # 状态变量
@@ -263,6 +322,13 @@ class OTAServer(QMainWindow):
         self.lbl_broker_info = None
         self.lbl_status_icon = None
         self.lbl_broker_info = None
+
+        # OTA状态机变量
+        self.ota_state = OTA_STAGE_IDLE           # 当前OTA状态
+        self.retry_count = 0                      # 当前重试次数
+        self.current_chunk_retries = 0            # 当前数据块重试次数
+        self.upgrade_timeout_timer = None         # 升级总超时定时器
+        self.device_current_version = None        # 设备当前版本
 
         # UI组件
         self.tabs = None
@@ -283,6 +349,9 @@ class OTAServer(QMainWindow):
         self.loadSettings()
         self.append_log("[INFO] W5500 OTA 升级服务器已启动")
         self.append_log("[INFO] 等待连接到MQTT Broker...")
+
+        # 自动加载默认固件文件
+        self.load_default_firmware()
 
     def initUI(self):
         # 窗口设置
@@ -535,7 +604,7 @@ class OTAServer(QMainWindow):
         # 分块大小
         self.cb_chunk_size = QComboBox()
         self.cb_chunk_size.addItems(["1KB", "2KB", "4KB", "8KB"])
-        self.cb_chunk_size.setCurrentIndex(2)  # 4KB默认
+        self.cb_chunk_size.setCurrentIndex(0)  # 1KB默认
         config_layout.addRow("分块大小:", self.cb_chunk_size)
 
         # 传输延迟
@@ -672,8 +741,8 @@ class OTAServer(QMainWindow):
         settings.clear()
 
         # 重置为默认值
-        self.broker_address = "broker.emqx.io"
-        self.broker_port = 1883
+        self.broker_address = "app-management-server.washer-saas.istarix.com"
+        self.broker_port = 20118
         self.device_id = "w5500_001"
 
         # 更新UI
@@ -749,7 +818,9 @@ class OTAServer(QMainWindow):
         self.mqtt_worker = MQTTWorker(
             self.broker_address,
             self.broker_port,
-            f"{CLIENT_ID}_{int(time.time())}"
+            "W5500_SERVER",
+            self.broker_username,
+            self.broker_password
         )
         self.mqtt_worker.connected.connect(self.on_mqtt_connected)
         self.mqtt_worker.disconnected.connect(self.on_mqtt_disconnected)
@@ -810,7 +881,7 @@ class OTAServer(QMainWindow):
         self.lbl_broker_info.setText("已连接 " + self.broker_address + ":" + str(self.broker_port))
         self.append_log("[MQTT] 已连接到Broker")
 
-        # 订阅相关主题
+        # 订阅相关主题（按照协议文档格式）
         topics = [
             f"device/{self.device_id}/ota/status",
             f"device/{self.device_id}/ota/ack",
@@ -839,13 +910,14 @@ class OTAServer(QMainWindow):
         self.append_log(f"[错误] {error}")
 
     def on_mqtt_message(self, topic, payload):
-        """MQTT消息处理"""
+        """MQTT消息处理 - 完整的异常处理"""
         # 格式化显示收到的消息
         try:
             payload_json = json.loads(payload)
             payload_str = json.dumps(payload_json, indent=2, ensure_ascii=False)
-        except:
+        except json.JSONDecodeError as e:
             payload_str = payload
+            self.append_log(f"[WARN] 消息格式不是有效的JSON: {e}")
 
         self.append_log(f"┌─────────────────────────────────────────────")
         self.append_log(f"│ [RECV] 主题: {topic}")
@@ -855,45 +927,182 @@ class OTAServer(QMainWindow):
         if "/ota/status" in topic:
             try:
                 status = json.loads(payload)
+                self._validate_ota_status(status)
                 self.handle_ota_status(status)
+            except json.JSONDecodeError as e:
+                error_msg = f"解析OTA状态失败: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据解析错误", error_msg)
+            except ValueError as e:
+                error_msg = f"OTA状态数据无效: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据验证错误", error_msg)
             except Exception as e:
-                self.append_log(f"[错误] 解析状态失败: {e}")
+                error_msg = f"处理OTA状态时发生未知错误: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.critical(self, "处理错误", error_msg)
 
         elif "/ota/ack" in topic:
             try:
                 ack = json.loads(payload)
+                self._validate_ota_ack(ack)
                 self.handle_ota_ack(ack)
+            except json.JSONDecodeError as e:
+                error_msg = f"解析OTA ACK失败: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据解析错误", error_msg)
+            except ValueError as e:
+                error_msg = f"OTA ACK数据无效: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据验证错误", error_msg)
             except Exception as e:
-                self.append_log(f"[错误] 解析ACK失败: {e}")
+                error_msg = f"处理OTA ACK时发生未知错误: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.critical(self, "处理错误", error_msg)
+
+        elif "/ota/response" in topic:
+            try:
+                response = json.loads(payload)
+                self.handle_ota_response(response)
+            except json.JSONDecodeError as e:
+                error_msg = f"解析OTA响应失败: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据解析错误", error_msg)
+
+    def _validate_ota_status(self, status):
+        """验证OTA状态数据的有效性"""
+        required_fields = ['stage']
+
+        for field in required_fields:
+            if field not in status:
+                raise ValueError(f"缺少必需字段: {field}")
+
+        stage = status.get('stage', -1)
+        if stage not in OTA_STAGE_NAMES:
+            raise ValueError(f"无效的阶段值: {stage}")
+
+        error = status.get('error', 0)
+        if error < 0 or error > 9:
+            self.append_log(f"[WARN] 错误码超出范围: {error}")
+
+    def _validate_ota_ack(self, ack):
+        """验证OTA ACK数据的有效性"""
+        required_fields = ['index', 'success']
+
+        for field in required_fields:
+            if field not in ack:
+                raise ValueError(f"缺少必需字段: {field}")
+
+        if not isinstance(ack['success'], bool):
+            raise ValueError("success字段必须是布尔值")
+
+    def handle_ota_response(self, response):
+        """处理OTA通用响应"""
+        self.append_log(f"[OTA] 收到响应: {json.dumps(response, indent=2)}")
 
     def handle_ota_status(self, status):
-        """处理OTA状态"""
+        """处理OTA状态 - 完整的状态机实现"""
         stage = status.get('stage', -1)
         progress = status.get('progress', 0)
         error = status.get('error', 0)
+        version = status.get('version', None)
 
-        stage_names = ["空闲", "检查中", "下载中", "校验中", "安装中", "成功", "失败"]
-        stage_name = stage_names[stage] if 0 <= stage < len(stage_names) else "未知"
+        # 获取阶段名称
+        stage_name = OTA_STAGE_NAMES.get(stage, "未知")
 
-        self.append_log(f"[OTA] 阶段: {stage_name}, 进度: {progress}%, 错误: {error}")
+        # 记录设备版本
+        if version:
+            self.device_current_version = version
 
-        if stage == 5:  # SUCCESS
-            self.transfer_in_progress = False
-            self.progress_bar.setValue(100)
-            self.btn_start_upgrade.setEnabled(True)
-            self.btn_stop_upgrade.setEnabled(False)
-            QMessageBox.information(self, "成功", "固件升级完成！")
-            self.append_log("=== 升级完成 ===")
+        self.append_log(f"[OTA] 阶段: {stage_name}, 进度: {progress}%, 错误: {error}, 版本: {version}")
 
-        elif stage == 6:  # FAILED
-            self.transfer_in_progress = False
-            self.btn_start_upgrade.setEnabled(True)
-            self.btn_stop_upgrade.setEnabled(False)
-            QMessageBox.critical(self, "升级失败", f"OTA升级失败，错误码: {error}")
-            self.append_log("=== 升级失败 ===")
+        # 更新OTA状态机
+        self.ota_state = stage
+
+        # 根据不同阶段处理
+        if stage == OTA_STAGE_SUCCESS:
+            self._handle_stage_success()
+        elif stage == OTA_STAGE_FAILED:
+            self._handle_stage_failed(error)
+        elif stage == OTA_STAGE_PREPARING:
+            self._handle_stage_preparing()
+        elif stage == OTA_STAGE_DOWNLOADING:
+            self._handle_stage_downloading(progress)
+        elif stage == OTA_STAGE_VERIFYING:
+            self._handle_stage_verifying()
+        elif stage == OTA_STAGE_INSTALLING:
+            self._handle_stage_installing()
+
+    def _handle_stage_success(self):
+        """处理升级成功阶段"""
+        self.transfer_in_progress = False
+        self.progress_bar.setValue(100)
+        self.btn_start_upgrade.setEnabled(True)
+        self.btn_stop_upgrade.setEnabled(False)
+
+        # 停止升级超时定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+
+        QMessageBox.information(self, "升级成功", f"固件升级完成！\n设备当前版本: {self.device_current_version}")
+        self.append_log("=== OTA升级成功 ===")
+
+        # 重置为空闲状态，允许再次升级
+        self.ota_state = OTA_STAGE_IDLE
+
+    def _handle_stage_failed(self, error_code):
+        """处理升级失败阶段"""
+        self.transfer_in_progress = False
+        self.btn_start_upgrade.setEnabled(True)
+        self.btn_stop_upgrade.setEnabled(False)
+
+        # 停止升级超时定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+
+        # 获取错误信息
+        error_message = OTA_ERROR_MESSAGES.get(error_code, f"未知错误 (错误码: {error_code})")
+
+        QMessageBox.critical(self, "升级失败", f"OTA升级失败！\n错误信息: {error_message}\n错误码: {error_code}")
+        self.append_log(f"=== OTA升级失败 - {error_message} ===")
+
+        # 重置为空闲状态，允许再次尝试升级
+        self.ota_state = OTA_STAGE_IDLE
+
+    def _handle_stage_preparing(self):
+        """处理准备阶段 - 设备收到ota_start后进入准备状态，准备就绪后发送数据块"""
+        self.ota_state = OTA_STAGE_PREPARING
+        self.append_log("[OTA] 设备正在准备Flash，等待准备完成...")
+
+        # 根据协议规范，收到stage=1后不需要等待，可以开始发送数据块
+        # 但为了兼容设备端可能还在擦除Flash，我们延迟一段时间再发送
+        if self.transfer_in_progress and self.sent_chunks == 0:
+            self.append_log("[OTA] 设备准备就绪，开始发送数据块...")
+            QTimer.singleShot(1000, self.send_next_chunk)
+
+    def _handle_stage_downloading(self, progress):
+        """处理下载阶段"""
+        self.ota_state = OTA_STAGE_DOWNLOADING
+        self.progress_bar.setValue(progress)
+        self.append_log(f"[OTA] 设备下载进度：{progress}%")
+
+        # 设备进入下载阶段，继续发送数据块（如果还有未发送的）
+        if self.transfer_in_progress and self.sent_chunks < self.total_chunks:
+            # 延迟一段时间再发送，给设备处理时间
+            QTimer.singleShot(100, self.send_next_chunk)
+
+    def _handle_stage_verifying(self):
+        """处理校验阶段"""
+        self.ota_state = OTA_STAGE_VERIFYING
+        self.append_log("[OTA] 设备正在验证固件 CRC32...")
+
+    def _handle_stage_installing(self):
+        """处理安装阶段"""
+        self.ota_state = OTA_STAGE_INSTALLING
+        self.append_log("[OTA] 设备正在安装固件...")
 
     def handle_ota_ack(self, ack):
-        """处理OTA确认 - 收到ACK后发送下一块"""
+        """处理OTA确认 - 带重试机制"""
         index = ack.get('index', -1)
         success = ack.get('success', False)
 
@@ -906,6 +1115,7 @@ class OTAServer(QMainWindow):
             if success:
                 self.append_log(f"[OTA] 块 {index} ACK成功")
                 self.waiting_for_ack = False
+                self.current_chunk_retries = 0  # 重置当前块重试次数
 
                 # 更新进度
                 self.sent_chunks += 1
@@ -917,12 +1127,33 @@ class OTAServer(QMainWindow):
                 delay = self.sb_delay.value()
                 QTimer.singleShot(delay, self.send_next_chunk)
             else:
-                self.append_log(f"[OTA] 块 {index} ACK失败，重新发送...")
-                self.waiting_for_ack = False
-                # 重新发送当前块（sent_chunks不变）
-                QTimer.singleShot(100, self.send_next_chunk)
+                self.current_chunk_retries += 1
+                self.append_log(f"[OTA] 块 {index} ACK失败 (重试 {self.current_chunk_retries}/{MAX_RETRY_COUNT})")
+
+                if self.current_chunk_retries >= MAX_RETRY_COUNT:
+                    # 达到最大重试次数，终止升级
+                    self._handle_max_retries_reached(index)
+                else:
+                    self.waiting_for_ack = False
+                    # 重新发送当前块（sent_chunks不变）
+                    QTimer.singleShot(500, self.send_next_chunk)
         else:
             self.append_log(f"[OTA] 收到块 {index} ACK: {success}")
+
+    def _handle_max_retries_reached(self, chunk_index):
+        """处理达到最大重试次数的情况"""
+        self.transfer_in_progress = False
+        self.ota_state = OTA_STAGE_IDLE  # 重置为空闲状态，允许再次升级
+        self.btn_start_upgrade.setEnabled(True)
+        self.btn_stop_upgrade.setEnabled(False)
+
+        # 停止升级超时定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+
+        error_msg = f"块 {chunk_index} 重试 {MAX_RETRY_COUNT} 次后仍失败，升级终止"
+        QMessageBox.critical(self, "升级失败", error_msg)
+        self.append_log(f"=== {error_msg} ===")
 
     def on_browse_clicked(self):
         """浏览文件按钮事件"""
@@ -939,6 +1170,23 @@ class OTAServer(QMainWindow):
                 self.btn_start_upgrade.setEnabled(True)
             else:
                 self.btn_start_upgrade.setEnabled(False)
+
+    def load_default_firmware(self):
+        """自动加载默认固件文件 (SERVER目录下的ota.hex)"""
+        # 获取脚本所在目录
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        default_firmware_path = os.path.join(script_dir, "ota.hex")
+
+        if os.path.exists(default_firmware_path):
+            self.append_log(f"[INFO] 自动加载默认固件: {default_firmware_path}")
+            self.le_firmware_path.setText(default_firmware_path)
+            if self.load_firmware(default_firmware_path):
+                self.btn_start_upgrade.setEnabled(True)
+                self.append_log("[INFO] 默认固件加载成功")
+            else:
+                self.append_log("[WARN] 默认固件加载失败")
+        else:
+            self.append_log(f"[INFO] 未找到默认固件: {default_firmware_path}")
 
     def load_firmware(self, file_path):
         """加载固件文件"""
@@ -973,7 +1221,7 @@ class OTAServer(QMainWindow):
             return False
 
     def on_start_upgrade_clicked(self):
-        """开始升级按钮事件"""
+        """开始升级按钮事件 - 完整的状态机初始化"""
         version = self.le_version.text().strip()
 
         if not version:
@@ -988,21 +1236,47 @@ class OTAServer(QMainWindow):
             QMessageBox.warning(self, "固件错误", "未加载固件")
             return
 
+        # 检查设备状态（必须是IDLE状态）
+        if self.ota_state != OTA_STAGE_IDLE:
+            QMessageBox.warning(self, "状态错误", f"设备当前状态不是空闲状态，当前状态: {OTA_STAGE_NAMES.get(self.ota_state, '未知')}")
+            return
+
         self.append_log(f"[OTA] 正在升级到版本 {version}...")
         self.sent_chunks = 0
+        self.current_chunk_retries = 0
+        self.waiting_for_ack = False  # 重置等待ACK标志
         self.transfer_in_progress = True
+        self.ota_state = OTA_STAGE_PREPARING
 
         self.btn_start_upgrade.setEnabled(False)
         self.btn_stop_upgrade.setEnabled(True)
 
         crc32 = CRC32Calculator.calculate(self.firmware_data)
 
+        # 打印固件前后16字节用于调试对比
+        first_16 = self.firmware_data[:16]
+        last_16 = self.firmware_data[-16:]
+        self.append_log(f"[OTA] 固件前16字节: {first_16.hex().upper()}")
+        self.append_log(f"[OTA] 固件后16字节: {last_16.hex().upper()}")
+
+        # 再次验证CRC计算 - 用不同方式计算确保一致
+        crc32_verify = CRC32Calculator.calculate(self.firmware_data)
+        self.append_log(f"[OTA] CRC32验证: 第一次=0x{int(crc32):08X}, 第二次=0x{int(crc32_verify):08X}")
+
+        self.append_log(f"[OTA] 发送固件信息:")
+        self.append_log(f"  版本: {version}")
+        self.append_log(f"  大小: {self.firmware_size} 字节")
+        self.append_log(f"  CRC32: 0x{int(crc32):08X}")
+        self.append_log(f"  块数: {self.total_chunks}")
+        self.append_log(f"  块大小: {CHUNK_SIZE} 字节")
+
         command = {
             "cmd": "ota_start",
             "version": version,
             "size": self.firmware_size,
             "crc32": int(crc32),
-            "chunks": self.total_chunks
+            "chunks": self.total_chunks,
+            "chunk_size": CHUNK_SIZE
         }
 
         topic = f"device/{self.device_id}/ota/cmd"
@@ -1014,18 +1288,63 @@ class OTAServer(QMainWindow):
         self.append_log(f"│ [SEND] 内容: {json.dumps(command, indent=2, ensure_ascii=False)}")
         self.append_log(f"└─────────────────────────────────────────────")
 
-        # 延迟发送第一个数据块
-        QTimer.singleShot(500, self.send_next_chunk)
+        # 设置升级总超时定时器（5分钟）
+        self.upgrade_timeout_timer = QTimer()
+        self.upgrade_timeout_timer.setSingleShot(True)
+        self.upgrade_timeout_timer.timeout.connect(self.on_upgrade_timeout)
+        self.upgrade_timeout_timer.start(TOTAL_UPGRADE_TIMEOUT_MS)
+
+        # 根据协议规范，等待设备回复stage=1后再发送数据块
+        # 数据块发送由_handle_stage_checking()触发
+
+    def on_upgrade_timeout(self):
+        """升级超时处理"""
+        if self.transfer_in_progress:
+            self.transfer_in_progress = False
+            self.ota_state = OTA_STAGE_FAILED
+            self.btn_start_upgrade.setEnabled(True)
+            self.btn_stop_upgrade.setEnabled(False)
+
+            # 停止升级超时定时器
+            if self.upgrade_timeout_timer:
+                self.upgrade_timeout_timer.stop()
+
+            # 停止ACK超时定时器
+            if hasattr(self, 'ack_timeout_timer'):
+                self.ack_timeout_timer.stop()
+
+            # 重置等待ACK标志
+            if hasattr(self, 'waiting_for_ack'):
+                self.waiting_for_ack = False
+
+            # 重置数据块计数
+            self.sent_chunks = 0
+            self.current_chunk_retries = 0
+
+            error_msg = f"升级超时（超过 {TOTAL_UPGRADE_TIMEOUT_MS // 60000} 分钟），升级终止"
+            QMessageBox.critical(self, "升级超时", error_msg)
+            self.append_log(f"=== {error_msg} ===")
+
+            # 发送取消命令
+            command = {"cmd": "ota_cancel"}
+            topic = f"device/{self.device_id}/ota/cmd"
+            self.mqtt_worker.publish(topic, json.dumps(command))
 
     def on_stop_upgrade_clicked(self):
-        """停止升级按钮事件"""
+        """停止升级按钮事件 - 发送取消命令"""
         self.transfer_in_progress = False
+        self.ota_state = OTA_STAGE_IDLE
         self.btn_start_upgrade.setEnabled(True)
         self.btn_stop_upgrade.setEnabled(False)
+
+        # 停止升级超时定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+
         self.append_log("[OTA] 升级已被用户停止")
 
-        # 发送停止命令
-        command = {"cmd": "ota_stop"}
+        # 发送取消命令（按照协议文档使用 ota_cancel）
+        command = {"cmd": "ota_cancel"}
         topic = f"device/{self.device_id}/ota/cmd"
         self.mqtt_worker.publish(topic, json.dumps(command))
 
@@ -1048,6 +1367,12 @@ class OTAServer(QMainWindow):
         start = self.sent_chunks * CHUNK_SIZE
         end = min(start + CHUNK_SIZE, self.firmware_size)
         chunk_data = self.firmware_data[start:end]
+
+        # 调试：打印chunk的前后字节
+        chunk_first = chunk_data[:16].hex().upper()
+        chunk_last = chunk_data[-16:].hex().upper()
+        self.append_log(f"[OTA] Chunk {self.sent_chunks} 前16字节: {chunk_first}")
+        self.append_log(f"[OTA] Chunk {self.sent_chunks} 后16字节: {chunk_last}")
 
         chunk_msg = {
             "index": self.sent_chunks,
@@ -1075,18 +1400,25 @@ class OTAServer(QMainWindow):
         # 设置等待ACK标志
         self.waiting_for_ack = True
 
-        # 设置ACK超时（5秒）
+        # 设置ACK超时（使用配置的超时时间）
         self.ack_timeout_timer = QTimer()
         self.ack_timeout_timer.setSingleShot(True)
         self.ack_timeout_timer.timeout.connect(self.on_ack_timeout)
-        self.ack_timeout_timer.start(5000)
+        self.ack_timeout_timer.start(ACK_TIMEOUT_MS)
 
     def on_ack_timeout(self):
-        """ACK超时处理 - 重传当前块"""
+        """ACK超时处理 - 带重试机制"""
         if self.transfer_in_progress and hasattr(self, 'waiting_for_ack') and self.waiting_for_ack:
-            self.append_log(f"[OTA] 块 {self.sent_chunks} ACK超时，重新发送...")
-            # 不增加sent_chunks，重新发送当前块
-            self.send_next_chunk()
+            self.current_chunk_retries += 1
+            self.append_log(f"[OTA] 块 {self.sent_chunks} ACK超时 (重试 {self.current_chunk_retries}/{MAX_RETRY_COUNT})")
+
+            if self.current_chunk_retries >= MAX_RETRY_COUNT:
+                # 达到最大重试次数，终止升级
+                self._handle_max_retries_reached(self.sent_chunks)
+            else:
+                # 不增加sent_chunks，重新发送当前块
+                self.waiting_for_ack = False
+                self.send_next_chunk()
 
     def append_log(self, message):
         """添加日志"""

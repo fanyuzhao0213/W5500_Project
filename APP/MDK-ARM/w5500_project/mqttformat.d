@@ -1,0 +1,11 @@
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTFormat.c
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\StackTrace.h
+.\w5500_project\mqttformat.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTPacket.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTConnect.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTPublish.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTSubscribe.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTUnsubscribe.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTFormat.h
+.\w5500_project\mqttformat.o: ..\Application\MQTT\paho\MQTTPacket.h
+.\w5500_project\mqttformat.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
