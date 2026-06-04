@@ -78,10 +78,11 @@ OTA_ERROR_MESSAGES = {
 }
 
 # 超时配置
-ACK_TIMEOUT_MS = 5000        # ACK超时时间（5秒）
+ACK_TIMEOUT_MS = 2000        # ACK超时时间（2秒）
 MAX_RETRY_COUNT = 5          # 最大重试次数
 COMMAND_TIMEOUT_MS = 10000   # 命令超时时间（10秒）
 TOTAL_UPGRADE_TIMEOUT_MS = 5 * 60 * 1000  # 整个升级流程超时（5分钟）
+VERIFY_TIMEOUT_MS = 60 * 1000  # 等待新固件联网确认超时（1分钟）
 
 
 class FirmwareLoader:
@@ -328,6 +329,7 @@ class OTAServer(QMainWindow):
         self.retry_count = 0                      # 当前重试次数
         self.current_chunk_retries = 0            # 当前数据块重试次数
         self.upgrade_timeout_timer = None         # 升级总超时定时器
+        self.verify_timeout_timer = None         # 等待新固件联网确认超时定时器（1分钟）
         self.device_current_version = None        # 设备当前版本
 
         # UI组件
@@ -882,10 +884,12 @@ class OTAServer(QMainWindow):
         self.append_log("[MQTT] 已连接到Broker")
 
         # 订阅相关主题（按照协议文档格式）
+        # 注意: ota/notify 用于接收"升级成功/回滚"等状态变更事件
         topics = [
             f"device/{self.device_id}/ota/status",
             f"device/{self.device_id}/ota/ack",
-            f"device/{self.device_id}/ota/response"
+            f"device/{self.device_id}/ota/response",
+            f"device/{self.device_id}/ota/notify"
         ]
 
         for topic in topics:
@@ -969,6 +973,17 @@ class OTAServer(QMainWindow):
                 self.append_log(f"[错误] {error_msg}")
                 QMessageBox.warning(self, "数据解析错误", error_msg)
 
+        elif "/ota/notify" in topic:
+            # ota/notify 是新固件联网成功后发的"状态变更"事件
+            # 这是确认"升级真正成功"的可靠信号 (新固件真的活着)
+            try:
+                notify = json.loads(payload)
+                self.handle_ota_notify(notify)
+            except json.JSONDecodeError as e:
+                error_msg = f"解析OTA通知失败: {e}"
+                self.append_log(f"[错误] {error_msg}")
+                QMessageBox.warning(self, "数据解析错误", error_msg)
+
     def _validate_ota_status(self, status):
         """验证OTA状态数据的有效性"""
         required_fields = ['stage']
@@ -999,6 +1014,125 @@ class OTAServer(QMainWindow):
     def handle_ota_response(self, response):
         """处理OTA通用响应"""
         self.append_log(f"[OTA] 收到响应: {json.dumps(response, indent=2)}")
+
+    def handle_ota_notify(self, notify):
+        """处理OTA状态变更事件 (新固件联网成功后发)
+
+        这是确认"升级真正成功"的可靠信号 - 因为:
+          - ota/status stage=5 是老固件重启前发的, 不可靠
+          - ota/notify ota_success 是新固件真的活着且能联网, 才是真成功
+        """
+        event = notify.get('event', 'unknown')
+        app = notify.get('app', -1)
+        version = notify.get('version', 0)
+        boot_count = notify.get('boot_count', 0)
+        active = notify.get('active', -1)
+
+        self.append_log(f"[OTA-NOTIFY] 收到事件: {event}")
+        self.append_log(f"  运行分区: APP-{('A' if app == 0 else 'B')}")
+        self.append_log(f"  版本: {version}")
+        self.append_log(f"  启动确认: {boot_count} 次")
+        self.append_log(f"  激活分区: APP-{('A' if active == 0 else 'B')}")
+
+        if event == "ota_success":
+            self._handle_ota_notify_success(notify)
+        elif event == "ota_rollback":
+            self._handle_ota_notify_rollback(notify)
+        else:
+            self.append_log(f"[WARN] 未知事件类型: {event}")
+
+    def _handle_ota_notify_success(self, notify):
+        """处理 ota_success 事件 - 升级真正成功 (新固件已联网)"""
+        self.append_log("=" * 50)
+        self.append_log("★ OTA升级真正成功！(新固件已联网确认)")
+        self.append_log("=" * 50)
+
+        # 停止所有定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+        if self.verify_timeout_timer:
+            self.verify_timeout_timer.stop()
+
+        # 更新状态
+        self.transfer_in_progress = False
+        self.ota_state = OTA_STAGE_SUCCESS
+        self.progress_bar.setValue(100)
+        self.btn_start_upgrade.setEnabled(True)
+        self.btn_stop_upgrade.setEnabled(False)
+
+        # 弹窗通知
+        version = notify.get('version', 'unknown')
+        QMessageBox.information(
+            self,
+            "升级成功",
+            f"固件升级成功！\n新固件已联网确认。\n设备版本: {version}"
+        )
+        self.append_log("=== OTA升级成功 (新固件已确认) ===")
+
+        # 重置为空闲状态
+        self.ota_state = OTA_STAGE_IDLE
+
+    def _handle_ota_notify_rollback(self, notify):
+        """处理 ota_rollback 事件 - 升级失败, 已回滚"""
+        self.append_log("=" * 50)
+        self.append_log("★ OTA升级失败，已回滚到旧版本")
+        self.append_log("=" * 50)
+
+        # 停止所有定时器
+        if self.upgrade_timeout_timer:
+            self.upgrade_timeout_timer.stop()
+        if self.verify_timeout_timer:
+            self.verify_timeout_timer.stop()
+
+        # 更新状态
+        self.transfer_in_progress = False
+        self.ota_state = OTA_STAGE_FAILED
+        self.btn_start_upgrade.setEnabled(True)
+        self.btn_stop_upgrade.setEnabled(False)
+
+        # 弹窗通知
+        QMessageBox.critical(
+            self,
+            "升级失败",
+            "新固件运行异常，已回滚到旧版本！\n请检查固件兼容性。"
+        )
+        self.append_log("=== OTA升级失败 (已回滚) ===")
+
+        # 重置为空闲状态，允许再次升级
+        self.ota_state = OTA_STAGE_IDLE
+
+    def on_verify_timeout(self):
+        """等待 ota/notify 超时 (默认1分钟)"""
+        if self.transfer_in_progress or (hasattr(self, 'ota_state') and self.ota_state in (OTA_STAGE_INSTALLING, OTA_STAGE_VERIFYING, OTA_STAGE_SUCCESS)):
+            self.append_log("=" * 50)
+            self.append_log("★ 等待新固件上线超时 (1分钟未收到 ota/notify)")
+            self.append_log("=" * 50)
+
+            # 停止其他定时器
+            if self.upgrade_timeout_timer:
+                self.upgrade_timeout_timer.stop()
+
+            # 更新状态
+            self.transfer_in_progress = False
+            self.btn_start_upgrade.setEnabled(True)
+            self.btn_stop_upgrade.setEnabled(False)
+
+            # 弹窗警告
+            reply = QMessageBox.warning(
+                self,
+                "升级确认超时",
+                "1分钟内未收到新固件的上线通知！\n\n"
+                "可能原因:\n"
+                "  1. 新固件启动失败 (Crash)\n"
+                "  2. 新固件无法联网\n"
+                "  3. 设备已断电\n\n"
+                "建议检查设备状态后再试。",
+                QMessageBox.Ok
+            )
+            self.append_log("=== 升级确认超时，请人工检查设备 ===")
+
+            # 重置为空闲状态
+            self.ota_state = OTA_STAGE_IDLE
 
     def handle_ota_status(self, status):
         """处理OTA状态 - 完整的状态机实现"""
@@ -1100,6 +1234,30 @@ class OTAServer(QMainWindow):
         """处理安装阶段"""
         self.ota_state = OTA_STAGE_INSTALLING
         self.append_log("[OTA] 设备正在安装固件...")
+        self.append_log(f"[OTA] 启动{VERIFY_TIMEOUT_MS // 1000}秒等待新固件联网确认...")
+
+        # 启动 1 分钟等待 ota/notify 超时定时器
+        # 设备在 stage=4 (installing) 之后会重启, 重启后新固件会发 ota/notify
+        # 如果 1 分钟内没收到, 说明新固件可能启动失败
+        if self.verify_timeout_timer:
+            self.verify_timeout_timer.stop()
+        self.verify_timeout_timer = QTimer()
+        self.verify_timeout_timer.setSingleShot(True)
+        self.verify_timeout_timer.timeout.connect(self.on_verify_timeout)
+        self.verify_timeout_timer.start(VERIFY_TIMEOUT_MS)
+
+    def _clear_ack_timeout_timer(self):
+        """安全停止并释放 ACK 超时定时器, 防止 QTimer 累积导致 on_ack_timeout 多次触发"""
+        timer = getattr(self, 'ack_timeout_timer', None)
+        if timer is not None:
+            try:
+                timer.stop()
+                timer.timeout.disconnect(self.on_ack_timeout)
+                timer.deleteLater()
+            except (RuntimeError, TypeError):
+                # timer 已经被 Qt 销毁或未连接, 忽略
+                pass
+            self.ack_timeout_timer = None
 
     def handle_ota_ack(self, ack):
         """处理OTA确认 - 带重试机制"""
@@ -1108,9 +1266,8 @@ class OTAServer(QMainWindow):
 
         # 如果正在等待ACK且ACK索引匹配
         if hasattr(self, 'waiting_for_ack') and self.waiting_for_ack:
-            # 停止超时定时器
-            if hasattr(self, 'ack_timeout_timer'):
-                self.ack_timeout_timer.stop()
+            # 停止并释放 ACK 超时定时器 (避免泄漏导致重复触发)
+            self._clear_ack_timeout_timer()
 
             if success:
                 self.append_log(f"[OTA] 块 {index} ACK成功")
@@ -1146,6 +1303,10 @@ class OTAServer(QMainWindow):
         self.ota_state = OTA_STAGE_IDLE  # 重置为空闲状态，允许再次升级
         self.btn_start_upgrade.setEnabled(True)
         self.btn_stop_upgrade.setEnabled(False)
+
+        # 清理 ACK timer (关键: 终止升级时必须释放, 否则下次升级会被旧 timer 干扰)
+        self._clear_ack_timeout_timer()
+        self.waiting_for_ack = False
 
         # 停止升级超时定时器
         if self.upgrade_timeout_timer:
@@ -1308,10 +1469,12 @@ class OTAServer(QMainWindow):
             # 停止升级超时定时器
             if self.upgrade_timeout_timer:
                 self.upgrade_timeout_timer.stop()
+            # 停止验证超时定时器
+            if self.verify_timeout_timer:
+                self.verify_timeout_timer.stop()
 
-            # 停止ACK超时定时器
-            if hasattr(self, 'ack_timeout_timer'):
-                self.ack_timeout_timer.stop()
+            # 停止并释放 ACK 超时定时器 (完整清理, 避免泄漏)
+            self._clear_ack_timeout_timer()
 
             # 重置等待ACK标志
             if hasattr(self, 'waiting_for_ack'):
@@ -1340,6 +1503,12 @@ class OTAServer(QMainWindow):
         # 停止升级超时定时器
         if self.upgrade_timeout_timer:
             self.upgrade_timeout_timer.stop()
+        # 停止验证超时定时器
+        if self.verify_timeout_timer:
+            self.verify_timeout_timer.stop()
+        # 清理 ACK 超时定时器 (关键, 防止停止后旧 timer 继续触发重试)
+        self._clear_ack_timeout_timer()
+        self.waiting_for_ack = False
 
         self.append_log("[OTA] 升级已被用户停止")
 
@@ -1401,6 +1570,8 @@ class OTAServer(QMainWindow):
         self.waiting_for_ack = True
 
         # 设置ACK超时（使用配置的超时时间）
+        # 先清掉旧 timer (防御性, 防止 send_next_chunk 被多次调用时累积)
+        self._clear_ack_timeout_timer()
         self.ack_timeout_timer = QTimer()
         self.ack_timeout_timer.setSingleShot(True)
         self.ack_timeout_timer.timeout.connect(self.on_ack_timeout)
@@ -1414,9 +1585,12 @@ class OTAServer(QMainWindow):
 
             if self.current_chunk_retries >= MAX_RETRY_COUNT:
                 # 达到最大重试次数，终止升级
+                self._clear_ack_timeout_timer()
+                self.waiting_for_ack = False
                 self._handle_max_retries_reached(self.sent_chunks)
             else:
                 # 不增加sent_chunks，重新发送当前块
+                # _clear_ack_timeout_timer 已在 send_next_chunk 内部调用
                 self.waiting_for_ack = False
                 self.send_next_chunk()
 

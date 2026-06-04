@@ -145,6 +145,70 @@ int ota_verify_firmware(uint32_t expected_crc);
 int ota_trigger_upgrade(void);
 
 /**
+ * @brief 新固件启动确认 - 由新固件在成功连接 MQTT 后调用
+ *
+ * 用途：
+ *   这是"三阶段 A/B 升级"的第 2 步：
+ *   1. 旧固件下载新固件到 spare 分区 (target)
+ *   2. 旧固件设置 ota_flag = PENDING, active_app = target, 重启
+ *   3. 新固件启动后调用 ota_confirm_boot_success() 检测当前 OTA 状态
+ *   4. 累计 N 次确认后, bootloader 才把 ota_flag 设为 SUCCESS, 并把旧分区标记为 invalid
+ *      此时旧分区才"可被删除/覆盖" (即: 可以被作为下一次 OTA 的 target)
+ *   5. 之后 app 检测到 SUCCESS, 调用 ota_notify_boot_success() 通知服务器
+ *
+ * 本函数职责 (只读不写):
+ *   - 检测 ota_flag 当前状态
+ *   - PENDING: 仅打印日志, boot_count 由 bootloader 维护
+ *   - SUCCESS: 触发 ota_notify_boot_success() 通知服务器
+ *   - ROLLBACK: 触发 ota_notify_boot_success() 通知服务器
+ *   - NORMAL: 无需任何处理
+ *
+ * 调用时机：MQTT 已成功连接 (即 g_mqtt_running == 1)
+ * 频率限制：每次启动只调用一次 (g_boot_confirmed 去重)
+ *
+ * @return 错误码
+ *   - OTA_ERR_OK: 确认成功
+ *   - OTA_ERR_INVALID_PARAM: 升级未处于 PENDING 状态 (无需确认)
+ */
+int ota_confirm_boot_success(void);
+
+/**
+ * @brief 通知服务器 OTA 升级结果 (内部由 ota_confirm_boot_success 调用)
+ *
+ * 用途: 在 ota_flag == SUCCESS 或 ROLLBACK 时, 通知服务器 OTA 升级结果
+ *
+ * 通知内容 (JSON):
+ *   {
+ *     "event": "ota_success" 或 "ota_rollback",
+ *     "app":   当前运行分区 (0=APP_A, 1=APP_B),
+ *     "version": 当前分区版本号,
+ *     "boot_count": 累计启动确认次数,
+ *     "active": 当前激活的分区
+ *   }
+ *
+ * 发布到: OTA_TOPIC_NOTIFY
+ *
+ * 注意:
+ *   - 同一启动周期内只通知一次 (g_ota_success_notified 去重)
+ *   - 服务器收到后可将此设备从"升级中"状态转为"已升级"状态
+ *
+ * @return 错误码
+ *   - OTA_ERR_OK: 通知成功
+ *   - OTA_ERR_INVALID_PARAM: ota_flag 不是 SUCCESS/ROLLBACK
+ */
+int ota_notify_boot_success(void);
+
+/**
+ * @brief 检查是否可以开始新的 OTA 升级
+ * @return 1 可以, 0 拒绝 (例如上次升级还在 PENDING 验证中)
+ *
+ * 业务规则 (按用户的设计):
+ *   之前的升级必须已被新固件确认 (ota_flag = NORMAL 或 SUCCESS)
+ *   才能开新 OTA。否则会破坏正在验证的新固件/可能需要回滚的旧固件。
+ */
+int ota_is_ready_for_new_upgrade(void);
+
+/**
  * @brief 取消升级
  */
 void ota_cancel_upgrade(void);

@@ -18,7 +18,7 @@
 #define FIRMWARE_VERSION_BUILD    20260530
 
 /* 固件版本字符串 */
-#define FIRMWARE_VERSION_STR      "1.1.66.20260530"
+#define FIRMWARE_VERSION_STR      "1.1.11.20260530"
 
 /* 编译时间 */
 #define BUILD_TIME           __DATE__ " " __TIME__

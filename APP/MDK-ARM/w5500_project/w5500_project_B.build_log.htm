@@ -28,11 +28,19 @@ Project File Date:  06/03/2026
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'w5500_project_B'
 compiling main.c...
+compiling ota_client.c...
+..\Application\OTA\ota_client.c(577): warning:  #550-D: variable "len"  was set but never used
+      int len;
+..\Application\OTA\ota_client.c(817): warning:  #550-D: variable "len"  was set but never used
+      int len;
+..\Application\OTA\ota_client.c(1234): warning:  #550-D: variable "len"  was set but never used
+      int len;
+..\Application\OTA\ota_client.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=89048 RO-data=6436 RW-data=528 ZI-data=125804  
+Program Size: Code=90872 RO-data=7072 RW-data=540 ZI-data=125804  
 FromELF: creating hex file...
 After Build - User command #1: fromelf --bin -o ./w5500_project_B.bin ./w5500_project/w5500_project_B.axf
-"w5500_project\w5500_project_B.axf" - 0 Error(s), 0 Warning(s).
+"w5500_project\w5500_project_B.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -56,7 +64,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:07
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

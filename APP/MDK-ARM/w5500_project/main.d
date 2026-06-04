@@ -54,6 +54,7 @@
 .\w5500_project\main.o: ../Core/Inc/spi.h
 .\w5500_project\main.o: ../Core/Inc/usart.h
 .\w5500_project\main.o: ../Core/Inc/gpio.h
+.\w5500_project\main.o: ..\Application\OTA\ota_config.h
 .\w5500_project\main.o: ../Application/RTT/LOG.h
 .\w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\w5500_project\main.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

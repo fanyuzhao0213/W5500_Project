@@ -1,7 +1,11 @@
 #include "flash_driver.h"
-#include "mqtt_client.h"
 #include <string.h>
 #include "LOG.h"
+#include "stm32f4xx_hal.h"
+
+/* 看门狗句柄 (在 main.c 中定义) */
+extern IWDG_HandleTypeDef hiwdg;
+
 // Flash句柄
 static FLASH_EraseInitTypeDef erase_init;
 static uint32_t sector_error;
@@ -158,7 +162,18 @@ flash_err_t flash_erase_sector(uint32_t sector)
     return err;
 }
 
-// 擦除指定范围 - 分扇区擦除，每擦除一个扇区后维护网络
+// 擦除指定范围 - 分扇区擦除，每擦除一个扇区前后都喂狗
+//
+// 关键修复 (v2):
+// 1. 在 *每次扇区擦除之前* 喂狗 - 因为大扇区(128KB sector 5)单次擦除可能耗时
+//    最多 4 秒，加上之前 OTA 高优先级任务抢占了 MQTT 喂狗任务，IWDG 极易在
+//    sector 5 擦除期间咬死设备 (10s 超时)
+// 2. 在每次扇区擦除之后也喂狗 - 双重保险
+// 3. 移除原先的 mqtt_client_loop_nonblocking() 调用 - 这是线程不安全的:
+//    MQTT loop 本应只由 MQTT 任务调用，从 OTA 任务调用会与 MQTT 任务竞争访问
+//    MQTT 客户端的内部状态 (RX 缓冲区、序列号等)
+//    MQTT keepalive 是 60s, 完整擦除最多 ~8s, 不需要在擦除期间维护
+// 4. 每个扇区擦除前都打印日志，便于定位 stuck 在哪个扇区
 flash_err_t flash_erase_range(uint32_t start_addr, uint32_t size)
 {
     flash_err_t err = FLASH_OK;
@@ -172,8 +187,23 @@ flash_err_t flash_erase_range(uint32_t start_addr, uint32_t size)
     start_sector = get_sector(start_addr);
     end_sector = get_sector(start_addr + size - 1);
 
-    // 逐个扇区擦除，每擦除一个扇区后调用网络维护
+    LOGI("flash_erase_range: start=0x%08lX, size=%lu, sectors[%u..%u]",
+         (unsigned long)start_addr, (unsigned long)size,
+         (unsigned)start_sector, (unsigned)end_sector);
+
+    // 进入擦除循环前先喂狗一次, 保证后面有完整的 IWDG 窗口
+    HAL_IWDG_Refresh(&hiwdg);
+
+    // 逐个扇区擦除
     for (current_sector = start_sector; current_sector <= end_sector; current_sector++) {
+        // *擦除前*喂狗 - 这是关键修复点!
+        // 大扇区 (sector 5, 128KB) 单次 HAL_FLASHEx_Erase 是 busy-wait 约 4s,
+        // 期间高优先级 OTA 任务占用 CPU, NORMAL 优先级的 MQTT 任务无法喂狗
+        // 若擦除前不喂狗, IWDG 计数器可能已接近超时, 擦除期间就会触发 reset
+        HAL_IWDG_Refresh(&hiwdg);
+
+        LOGI("flash_erase_range: erasing sector %u ...", (unsigned)current_sector);
+
         erase_init.TypeErase = FLASH_TYPEERASE_SECTORS;
         erase_init.Banks = FLASH_BANK_1;
         erase_init.Sector = current_sector;
@@ -190,12 +220,21 @@ flash_err_t flash_erase_range(uint32_t start_addr, uint32_t size)
             } else if (status == HAL_TIMEOUT) {
                 err = FLASH_TIMEOUT;
             }
+            LOGE("flash_erase_range: sector %u erase failed, hal_status=%d, sector_error=0x%08lX",
+                 (unsigned)current_sector, status, (unsigned long)sector_error);
+            // 错误时也立即喂狗, 避免错误处理路径上的 reset
+            HAL_IWDG_Refresh(&hiwdg);
             return err;
         }
 
-        // 每擦除一个扇区后，调用网络维护函数防止 MQTT 超时
-        mqtt_client_loop_nonblocking(0);
+        LOGI("flash_erase_range: sector %u erased OK", (unsigned)current_sector);
+
+        // 擦除后也喂狗一次 (双重保险, 给下一个大扇区留出完整的 IWDG 窗口)
+        HAL_IWDG_Refresh(&hiwdg);
     }
+
+    LOGI("flash_erase_range: ALL DONE - sectors[%u..%u] erased",
+         (unsigned)start_sector, (unsigned)end_sector);
 
     return FLASH_OK;
 }
@@ -362,24 +401,24 @@ int flash_is_valid_addr(uint32_t addr)
     return (addr >= FLASH_BASE_ADDR) && (addr < FLASH_BASE_ADDR + FLASH_SIZE);
 }
 
-// 打印Flash区域数据（用于调试对比）
-void flash_dump(uint32_t addr, uint32_t size)
-{
-    uint8_t buf[16];
-    uint32_t i, j;
+//// 打印Flash区域数据（用于调试对比）
+//void flash_dump(uint32_t addr, uint32_t size)
+//{
+//    uint8_t buf[16];
+//    uint32_t i, j;
 
-    LOGI("========== Flash Dump: 0x%08lX, %lu bytes ==========", (unsigned long)addr, (unsigned long)size);
+//    LOGI("========== Flash Dump: 0x%08lX, %lu bytes ==========", (unsigned long)addr, (unsigned long)size);
 
-    for (i = 0; i < size; i += 16) {
-        for (j = 0; j < 16; j++) {
-            buf[j] = *(volatile uint8_t *)(addr + i + j);
-        }
-        LOGI("%08lX: %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X",
-             (unsigned long)(addr + i),
-             buf[0], buf[1], buf[2], buf[3],
-             buf[4], buf[5], buf[6], buf[7],
-             buf[8], buf[9], buf[10], buf[11],
-             buf[12], buf[13], buf[14], buf[15]);
-    }
-    LOGI("===================================================");
-}
+//    for (i = 0; i < size; i += 16) {
+//        for (j = 0; j < 16; j++) {
+//            buf[j] = *(volatile uint8_t *)(addr + i + j);
+//        }
+//        LOGI("%08lX: %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X",
+//             (unsigned long)(addr + i),
+//             buf[0], buf[1], buf[2], buf[3],
+//             buf[4], buf[5], buf[6], buf[7],
+//             buf[8], buf[9], buf[10], buf[11],
+//             buf[12], buf[13], buf[14], buf[15]);
+//    }
+//    LOGI("===================================================");
+//}

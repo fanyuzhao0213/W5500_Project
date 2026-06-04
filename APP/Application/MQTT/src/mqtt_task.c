@@ -305,6 +305,28 @@ void StartNetworkTask(void const * argument)
                 /* 注册 W5500 SPI 回调函数 */
                 wizchip_spi_cbfunc();
 
+                /* 软复位 W5500
+                 * 作用: 清空内部 PHY/MAC/Socket/DHCP 等所有状态, 解决"卡死"问题
+                 * 适用场景:
+                 *   - DHCP 超时后: 清掉内部残留的 Socket 状态
+                 *   - MQTT 重连失败: 清掉可能半开连接
+                 *   - PHY 链路异常: 重新初始化 PHY
+                 *   - 任何疑似 W5500 内部状态机错乱的情况
+                 *
+                 * 软复位流程 (W5500 手册):
+                 *   1. 写 MR = 0x80 (RST 位置 1) 触发软复位
+                 *   2. 等待至少 1ms 让内部 PLL 重新锁定
+                 *   3. 读一次 MR 寄存器 (这步隐含了必要的延时)
+                 *   4. 后续的 wizchip_init() 会重新配置缓冲区和网络
+                 *
+                 * 注意: 软复位不会丢 MAC, wizchip_init() 内部会保留并恢复
+                 */
+                LOGI("NET_STATE_INIT: Soft-resetting W5500...");
+                setMR(MR_RST);
+                getMR();   /* 读回 MR 触发 W5500 内部延时, 确保复位完成 */
+                HAL_Delay(10);  /* 多等 10ms, 保证内部 PLL 完全锁定 */
+                LOGI("NET_STATE_INIT: W5500 soft-reset done");
+
                 LOGI("NET_STATE_INIT: Initializing W5500...");
 
                 /* 初始化 W5500 Socket 缓冲区
@@ -591,12 +613,20 @@ void StartNetworkTask(void const * argument)
                 LOGI("========================================");
                 g_mqtt_running = 1;
                 g_net_state = NET_STATE_RUNNING;
+
+                /* 三阶段 A/B 升级第 2 步: 新固件联网成功 -> 确认 boot
+                 * (ota_confirm_boot_success 内部有去重, 同一启动周期只生效一次) */
+                ota_confirm_boot_success();
                 break;
             }
 
             case NET_STATE_MQTT_RECONNECT: {
                 LOGW("NET_STATE_MQTT_RECONNECT: Reconnecting to MQTT Broker %s:%d...",
                      MQTT_BROKER_HOSTNAME, MQTT_BROKER_PORT);
+
+                /* 进入 RECONNECT 前先清掉异常标志，避免异常任务在
+                 * 我们连接过程中再次抢跑触发恢复动作 */
+                mqtt_exception_clear();
 
                 /* 先断开已有连接 */
                 mqtt_client_disconnect();
@@ -651,6 +681,10 @@ void StartNetworkTask(void const * argument)
                 LOGI("========================================");
                 g_mqtt_running = 1;
                 g_net_state = NET_STATE_RUNNING;
+
+                /* 重新连上 MQTT 后也尝试确认 boot
+                 * (去重保证只在第一次成功连接时真正生效) */
+                ota_confirm_boot_success();
                 break;
             }
 
@@ -671,6 +705,17 @@ void StartNetworkTask(void const * argument)
                     DHCP_run();
                 }
 #endif
+
+                /* 检查异常任务上报的异常 (PHY 掉线等) */
+                exception_status_t* p_exc = mqtt_exception_get_status();
+                if (p_exc->type == EXCEPTION_PHY_LINK_DOWN) {
+                    LOGW("NET_STATE_RUNNING: PHY link down reported, switching to RECONNECT");
+                    mqtt_exception_clear();
+                    g_mqtt_running = 0;
+                    g_net_state = NET_STATE_INIT;
+                    break;
+                }
+
                 /* MQTT 循环处理 - 使用 100ms 超时保持连接活跃
                  * 注意：不能使用 timeout=0，否则 MQTT 库认为超时立即返回，
                  *       无法正确处理心跳和数据收发
@@ -679,6 +724,7 @@ void StartNetworkTask(void const * argument)
                 if (loop_rc < 0 || !mqtt_client.isconnected) {
                     LOGE("+++++++MQTT loop: connection lost! rc=%d, isconnected=%d", loop_rc, mqtt_client.isconnected);
                     g_mqtt_running = 0;
+                    /* 仅上报异常，不再由异常任务去"恢复" */
                     mqtt_exception_report(EXCEPTION_MQTT_DISCONNECTED);
                     g_net_state = NET_STATE_MQTT_RECONNECT;
                     break;
@@ -690,8 +736,49 @@ void StartNetworkTask(void const * argument)
             }
 
             case NET_STATE_WAITTING: {
-                LOGI("NET_STATE_WAITTING: wait systerm dealwith error!");
-                osDelay(100);
+                /*
+                 * 设计要点:
+                 *   - 10 秒间隔: 避免 DHCP 故障时高频重试 (防止 DHCP 服务器压力)
+                 *   - 从 PHY 链路检查重新开始: 物理层->DHCP->MQTT 全链路重建
+                 *   - 修复永久卡死问题: 工业级设备必须能自愈
+                 */
+                static uint32_t wait_enter_tick = 0;
+                static uint32_t last_log_sec = 0;
+                uint32_t elapsed;
+                uint32_t cur_sec;
+
+                if (wait_enter_tick == 0) {
+                    /* 第一次进入 WAITTING, 记录进入时间 */
+                    wait_enter_tick = HAL_GetTick();
+                    last_log_sec = 0;
+                    LOGW("NET_STATE_WAITTING: entered, will auto-retry network in 10 seconds");
+                }
+
+                elapsed = HAL_GetTick() - wait_enter_tick;
+                cur_sec = elapsed / 1000;
+
+                if (elapsed < 5000) {
+                    /* 还在等待, 每秒打印一次剩余时间 */
+                    if (cur_sec != last_log_sec) {
+                        LOGI("NET_STATE_WAITTING: waiting for recovery... (%lu/10s)",
+                             (unsigned long)cur_sec);
+                        last_log_sec = cur_sec;
+                    }
+                    osDelay(100);
+                } else {
+                    /* 10 秒到了, 从 PHY 链路检查重新初始化网络 */
+                    LOGW("NET_STATE_WAITTING: timeout, restarting network from PHY link check");
+                    wait_enter_tick = 0;  /* 重置, 下次进入时重新计时 */
+                    last_log_sec = 0;
+
+                    /* 清除异常状态, 重新探测物理层 */
+                    mqtt_exception_clear();
+#if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
+                    DHCP_stop();  /* 先停掉之前的 DHCP, 避免残留状态 */
+#endif
+                    g_mqtt_running = 0;
+                    g_net_state = NET_STATE_INIT;
+                }
                 break;
             }
 

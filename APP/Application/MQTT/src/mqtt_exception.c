@@ -33,12 +33,14 @@ static uint8_t g_dhcp_fail_count = 0;
 
 /* ============================================================
  * 内部函数声明
- * ============================================================ */
-static recovery_strategy_t determine_recovery_strategy(exception_type_t type);
-static void execute_recovery(recovery_strategy_t strategy);
+ * ============================================================
+ * 重要：异常任务只做"监测"和"通知"，不直接恢复网络
+ * 所有恢复动作由 NetworkTask 状态机完成 (避免双任务并发改状态)
+ */
 static void reset_exception_status(void);
 static void feed_watchdog_safely(void);
 static void crc32_self_test(void);
+static void notify_network_task(exception_type_t type);
 
 /* ============================================================
  * 初始化模块
@@ -226,6 +228,16 @@ exception_status_t* mqtt_exception_get_status(void)
 
 /* ============================================================
  * 异常处理任务主循环
+ * ============================================================
+ * 职责：纯监测 + 上报
+ *   1. 监测 PHY 链路
+ *   2. 监测 MQTT 连接状态
+ *   3. 监测堆栈高水位
+ *   4. 安全喂狗
+ *   5. 上报异常 (mqtt_exception_report)
+ *
+ * 严禁在本任务内执行任何 mqtt_client_disconnect / mqtt_task_set_state
+ * 等会改全局状态的操作。所有恢复由 NetworkTask 状态机独立完成。
  * ============================================================ */
 void StartExceptionTask(void const * argument)
 {
@@ -233,7 +245,7 @@ void StartExceptionTask(void const * argument)
     uint8_t phy_link;
 
     (void)argument;
-    LOGI("MQTT Exception: task started");
+    LOGI("MQTT Exception: task started (monitor-only mode)");
 
     for (;;) {
         /* 按检查间隔运行 */
@@ -246,43 +258,28 @@ void StartExceptionTask(void const * argument)
             phy_link = wizphy_getphylink();
 
             if (phy_link != PHY_LINK_ON) {
-                g_phy_check_count++;
+                if (g_phy_check_count < 255) {
+                    g_phy_check_count++;
+                }
 
                 if (g_phy_check_count >= PHY_CHECK_THRESHOLD) {
                     if (g_exception_status.type != EXCEPTION_PHY_LINK_DOWN) {
+                        /* 上报异常 -> 由 NetworkTask 状态机处理 */
                         mqtt_exception_report(EXCEPTION_PHY_LINK_DOWN);
+                        notify_network_task(EXCEPTION_PHY_LINK_DOWN);
                     }
                 }
-
-                LOGW("MQTT Exception: PHY link down (check=%d)", g_phy_check_count);
             } else {
-                /* PHY 链路恢复 */
+                /* PHY 链路恢复：仅清零计数，不擅自清异常类型
+                 * (异常类型由 NetworkTask 在正确状态机位置清除) */
                 if (g_phy_check_count > 0) {
                     LOGI("MQTT Exception: PHY link recovered");
                     g_phy_check_count = 0;
-
-                    /* 如果是 PHY 异常，清除 */
-                    if (g_exception_status.type == EXCEPTION_PHY_LINK_DOWN) {
-                        mqtt_exception_clear();
-                    }
                 }
             }
 
             /* =====================================================
-             * 2. 根据当前异常状态执行处理
-             * ===================================================== */
-            if (g_exception_status.type != EXCEPTION_NONE && !g_exception_status.in_recovery) {
-                recovery_strategy_t strategy = determine_recovery_strategy(g_exception_status.type);
-
-                if (strategy != RECOVERY_NONE) {
-                    g_exception_status.in_recovery = 1;
-                    LOGW("MQTT Exception: executing recovery strategy=%d", strategy);
-                    execute_recovery(strategy);
-                }
-            }
-
-            /* =====================================================
-             * 3. 安全喂狗（只有 MQTT 正常运行才喂狗）
+             * 2. 喂狗（安全策略：MQTT 正常连接时喂，出错时也喂以免异常恢复过程被复位）
              * ===================================================== */
             feed_watchdog_safely();
         }
@@ -292,134 +289,20 @@ void StartExceptionTask(void const * argument)
 }
 
 /* ============================================================
- * 内部：确定恢复策略
+ * 内部：通知网络任务处理异常
+ * ============================================================
+ * 通过 FreeRTOS 信号量唤醒网络任务，让 NetworkTask 在自己的
+ * 状态机里完成恢复，避免双任务并发改全局状态。
  * ============================================================ */
-static recovery_strategy_t determine_recovery_strategy(exception_type_t type)
+static void notify_network_task(exception_type_t type)
 {
-    switch (type) {
-        case EXCEPTION_PHY_LINK_DOWN:
-            /* PHY 断开，等 PHY 恢复后全复位 */
-            return RECOVERY_FULL_RESET;
+    extern osThreadId g_network_task_handle;
+    (void)type;
 
-        case EXCEPTION_W5500_ERROR:
-            return RECOVERY_RESET_W5500;
-
-        case EXCEPTION_DHCP_FAILED:
-        case EXCEPTION_DHCP_TIMEOUT:
-            return RECOVERY_RESTART_DHCP;
-
-        case EXCEPTION_MQTT_DISCONNECTED:
-            return RECOVERY_RETRY_MQTT;
-
-        case EXCEPTION_MQTT_PUBLISH_FAILED:
-        case EXCEPTION_MQTT_SUBSCRIBE_FAILED:
-            /* 发布/订阅失败多次才处理 */
-            if (g_exception_status.count >= 5) {
-                return RECOVERY_RETRY_MQTT;
-            }
-            return RECOVERY_NONE;
-
-        case EXCEPTION_NETWORK_ERROR:
-            return RECOVERY_FULL_RESET;
-
-        default:
-            return RECOVERY_NONE;
+    if (g_network_task_handle != NULL) {
+        /* 唤醒网络任务：让它在状态机里检查并恢复 */
+        osSignalSet(g_network_task_handle, 0x01);
     }
-}
-
-/* ============================================================
- * 内部：执行恢复策略
- * ============================================================ */
-static void execute_recovery(recovery_strategy_t strategy)
-{
-    g_exception_status.recovery_attempts++;
-
-    if (g_exception_status.recovery_attempts > MAX_RECOVERY_ATTEMPTS) {
-        LOGE("MQTT Exception: max recovery attempts reached, triggering watchdog reset");
-        /* 复位 */
-        HAL_NVIC_SystemReset();
-        return;
-    }
-
-    /* 等待一段时间再恢复 */
-    osDelay(RECOVERY_DELAY_MS);
-
-    /* 检查：如果在等待期间问题已自行恢复（如 PHY 链路重新连接），
-     * 则取消恢复操作，避免干扰正常的网络任务流程
-     * 注意：此时 type 已被 mqtt_exception_clear() 清除为 EXCEPTION_NONE，
-     *       但 in_recovery 仍保持为 1（因为 reset_exception_status 中已注释掉） */
-    if (g_exception_status.type == EXCEPTION_NONE) {
-        LOGW("MQTT Exception: recovery cancelled - issue resolved during delay");
-        g_exception_status.in_recovery = 0;
-        return;
-    }
-
-    switch (strategy) {
-        case RECOVERY_RETRY_MQTT:
-            LOGW("MQTT Exception: recovering - retry MQTT connection");
-            mqtt_client_disconnect();
-            mqtt_task_set_running(0);
-            mqtt_exception_clear();
-            mqtt_task_set_state(NET_STATE_MQTT_RECONNECT);
-            break;
-
-        case RECOVERY_RESTART_DHCP:
-#if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
-            g_dhcp_fail_count++;
-            LOGW("MQTT Exception: recovering - restart DHCP (attempt %d)", g_dhcp_fail_count);
-
-            /* DHCP 连续失败 3 次，触发系统复位 */
-            if (g_dhcp_fail_count >= 3) {
-                LOGE("MQTT Exception: DHCP failed %d times, triggering system reset!",
-                     g_dhcp_fail_count);
-                /* 停止喂狗，看门狗会在约 2 秒后复位系统 */
-                HAL_NVIC_SystemReset();
-            }
-
-            DHCP_stop();
-            mqtt_exception_clear();
-            mqtt_task_set_state(NET_STATE_INIT);
-#endif
-            break;
-        case RECOVERY_RESET_W5500:
-            LOGW("MQTT Exception: recovering - reset W5500");
-            wizchip_sw_reset();
-            HAL_Delay(100);
-            mqtt_client_disconnect();
-            mqtt_exception_clear();
-            mqtt_task_set_state(NET_STATE_INIT);
-            break;
-
-        case RECOVERY_FULL_RESET:
-            LOGW("MQTT Exception: recovering - full reset");
-            LOGW("MQTT Exception: resetting W5500 and restarting network...");
-            /* 1. 停止 DHCP */
-#if (NET_CONFIG_MODE == NET_CONFIG_DHCP)
-            DHCP_stop();
-#endif
-            /* 2. 断开 MQTT 连接 */
-            mqtt_client_disconnect();
-            /* 3. 软件复位 W5500 */
-            wizchip_sw_reset();
-            HAL_Delay(100);
-            /* 4. 清除异常状态 */
-            mqtt_exception_clear();
-            /* 5. 通知网络任务回到初始状态重新开始 */
-            mqtt_task_set_state(NET_STATE_INIT);
-            LOGI("MQTT Exception: full reset complete, network will restart");
-			HAL_NVIC_SystemReset();
-            break;
-
-        case RECOVERY_WATCHDOG_RESET:
-            LOGE("MQTT Exception: triggering watchdog reset");
-            /* 停止喂狗，系统会复位 */
-            break;
-
-        default:
-            break;
-    }
-
-    g_exception_status.in_recovery = 0;
 }
 
 /* ============================================================
@@ -431,7 +314,7 @@ static void reset_exception_status(void)
     g_exception_status.timestamp = 0;
     g_exception_status.count = 0;
     g_exception_status.in_recovery = 0;
-    // g_exception_status.recovery_attempts = 0;
+    g_exception_status.recovery_attempts = 0;
 }
 
 /* ============================================================

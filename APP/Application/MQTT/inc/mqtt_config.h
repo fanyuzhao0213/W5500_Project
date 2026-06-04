@@ -73,14 +73,20 @@
  *   - OTA_TOPIC_RESPONSE: 接收服务器的响应
  *
  * 设备发布主题：
- *   - OTA_TOPIC_STATUS: 上报 OTA 状态和进度
+ *   - OTA_TOPIC_STATUS: 上报 OTA 状态和进度（高频，每 10% 一次）
  *   - OTA_TOPIC_ACK: 发送数据块接收确认
+ *   - OTA_TOPIC_NOTIFY: 上报 OTA 状态变更事件（低频，一次性）
+ *       - 新固件启动确认 PENDING
+ *       - 升级成功 SUCCESS（达到 max_boot_count）
+ *       - 升级失败 ROLLBACK
+ *       - 服务器以此判断"该固件已稳定运行"
  */
 #define OTA_TOPIC_CMD          "device/" OTA_DEVICE_ID "/ota/cmd"
 #define OTA_TOPIC_STATUS       "device/" OTA_DEVICE_ID "/ota/status"
 #define OTA_TOPIC_DATA         "device/" OTA_DEVICE_ID "/ota/data"
 #define OTA_TOPIC_ACK          "device/" OTA_DEVICE_ID "/ota/ack"
 #define OTA_TOPIC_RESPONSE     "device/" OTA_DEVICE_ID "/ota/response"
+#define OTA_TOPIC_NOTIFY       "device/" OTA_DEVICE_ID "/ota/notify"
 
 /* OTA 服务器主题（可选）
  * 用于服务器端订阅和发布

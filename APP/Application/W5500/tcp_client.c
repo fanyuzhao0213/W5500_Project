@@ -192,14 +192,17 @@ int tcp_client_recv(uint8_t* buf, uint16_t len)
 
 /**
  * @brief TCP Client 断开连接
+ * @note 强制关闭 socket，避免半开连接导致下次 connect 失败
  */
 void tcp_client_disconnect(void)
 {
+    /* 无论 g_connected 状态如何，都尝试关闭 socket，
+     * 防止 W5500 内部处于半开状态导致下次 connect 失败 */
     if (g_connected) {
         close(TCP_CLIENT_SOCKET);
-        g_connected = 0;
         LOGI("TCP: Disconnected");
     }
+    g_connected = 0;
 }
 
 /**

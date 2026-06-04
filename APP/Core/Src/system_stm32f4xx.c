@@ -105,12 +105,12 @@
                                                      This value must be a multiple of 0x200. */
 #endif /* VECT_TAB_SRAM */
 #if !defined(VECT_TAB_OFFSET)
-/* OTA双分区支持:
- * - APP_Download 编译:  -DVECT_TAB_OFFSET=0x0000C000 (Keil Target Define)
- * - APP_OTA 编译:       -DVECT_TAB_OFFSET=0x00084000 (Keil Target Define)
- * 代码里不定义默认值，让编译器报错提示忘记配置
+/* OTA 双分区支持 (运行时修正,见 main.c 中的 ota_fix_vtor):
+ *   - 此处仅给一个保守默认值,让 SystemInit 编译通过
+ *   - 真正生效的 VTOR 由 main() 第一行根据 PC 实际地址设置
+ *   - 这样无论 A/B 用同一份 .o 链接都不会出错
  */
-#error "请在Keil Target的C/C++ Preprocessor Defines中添加: VECT_TAB_OFFSET=0x0000C000 或 0x00084000"
+#define VECT_TAB_OFFSET    0x0000C000UL
 #endif
 #endif /* USER_VECT_TAB_ADDRESS */
 /******************************************************************************/

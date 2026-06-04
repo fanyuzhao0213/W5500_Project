@@ -50,6 +50,7 @@ static int ota_params_validate(const ota_params_t *params)
 }
 
 // 从Flash读取参数
+// 注意: 不再读取备份区 (OTA_PARAMS_BACKUP_ADDR 与 App-B 冲突, 已废弃)
 ota_params_err_t ota_params_read(ota_params_t *params)
 {
     ota_params_t temp_params;
@@ -60,89 +61,68 @@ ota_params_err_t ota_params_read(ota_params_t *params)
         return OTA_PARAMS_ERROR;
     }
 
-    // 先尝试读取主参数区
+    // 读取主参数区
     LOGI("ota_params_read: reading from 0x%08X", OTA_PARAMS_ADDR);
     flash_read(OTA_PARAMS_ADDR, (uint8_t *)&temp_params, sizeof(ota_params_t));
     flash_read(OTA_PARAMS_ADDR, (uint8_t *)&magic_check, sizeof(uint32_t));
-    LOGI("ota_params_read: main magic=0x%08X, expected=0x%08X", magic_check, OTA_PARAMS_MAGIC);
+    LOGI("ota_params_read: magic=0x%08X, expected=0x%08X", magic_check, OTA_PARAMS_MAGIC);
 
     if (ota_params_validate(&temp_params)) {
         memcpy(params, &temp_params, sizeof(ota_params_t));
         return OTA_PARAMS_OK;
     }
 
-    // 主参数区无效，尝试读取备份区
-    LOGI("ota_params_read: main invalid, reading from 0x%08X", OTA_PARAMS_BACKUP_ADDR);
-    flash_read(OTA_PARAMS_BACKUP_ADDR, (uint8_t *)&temp_params, sizeof(ota_params_t));
-    flash_read(OTA_PARAMS_BACKUP_ADDR, (uint8_t *)&magic_check, sizeof(uint32_t));
-    LOGI("ota_params_read: backup magic=0x%08X, expected=0x%08X", magic_check, OTA_PARAMS_MAGIC);
-
-    if (ota_params_validate(&temp_params)) {
-        memcpy(params, &temp_params, sizeof(ota_params_t));
-        return OTA_PARAMS_OK;
-    }
-
-    // 都无效，返回默认参数
-    LOGW("ota_params_read: both main and backup invalid, using defaults");
+    // 无效，返回默认参数 (params 已填默认值)
+    LOGW("ota_params_read: main invalid, using defaults");
     ota_params_get_default(params);
     return OTA_PARAMS_INVALID_MAGIC;
 }
 
-// 写入参数到Flash（包含备份机制）
+// 写入参数到Flash
+// 注意: 不再使用备份区 (OTA_PARAMS_BACKUP_ADDR)
+// 原因: 备份区 0x080F8000 与 App-B 末尾 (0x080F8000-0x080FBFFF) 重叠,
+//       每次 ota_params_write() 都会擦除并覆盖 App-B 末段, 导致 App-B 固件损坏!
+// 改为: 单一存储 + 失败重试 (符合工业级"少即是多"原则)
 ota_params_err_t ota_params_write(const ota_params_t *params)
 {
     flash_err_t err;
     ota_params_t temp_params;
-    
+
     if (params == NULL) {
         return OTA_PARAMS_ERROR;
     }
-    
+
     // 复制参数并确保魔数正确
     memcpy(&temp_params, params, sizeof(ota_params_t));
     temp_params.magic_number = OTA_PARAMS_MAGIC;
-    
+
     // 解锁Flash
     err = flash_unlock();
     if (err != FLASH_OK) {
         return OTA_PARAMS_FLASH_ERROR;
     }
-    
-    // 先擦除备份区
-    err = flash_erase_range(OTA_PARAMS_BACKUP_ADDR, OTA_PARAMS_SIZE);
-    if (err != FLASH_OK) {
-        flash_lock();
-        return OTA_PARAMS_FLASH_ERROR;
-    }
-    
-    // 写入备份区
-    err = flash_write(OTA_PARAMS_BACKUP_ADDR, (uint8_t *)&temp_params, sizeof(ota_params_t));
-    if (err != FLASH_OK) {
-        flash_lock();
-        return OTA_PARAMS_FLASH_ERROR;
-    }
-    
-    // 再擦除主参数区
+
+    // 擦除主参数区
     err = flash_erase_range(OTA_PARAMS_ADDR, OTA_PARAMS_SIZE);
     if (err != FLASH_OK) {
         flash_lock();
         return OTA_PARAMS_FLASH_ERROR;
     }
-    
+
     // 写入主参数区
     err = flash_write(OTA_PARAMS_ADDR, (uint8_t *)&temp_params, sizeof(ota_params_t));
     if (err != FLASH_OK) {
         flash_lock();
         return OTA_PARAMS_FLASH_ERROR;
     }
-    
+
     // 加锁Flash
     flash_lock();
-    
+
     // 更新缓存
     memcpy(&cached_params, &temp_params, sizeof(ota_params_t));
     params_initialized = 1;
-    
+
     return OTA_PARAMS_OK;
 }
 

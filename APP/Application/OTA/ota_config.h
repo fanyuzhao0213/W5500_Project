@@ -31,8 +31,10 @@ extern "C" {
 #define OTA_PARAMS_ADDR            0x080FC000
 #define OTA_PARAMS_SIZE            0x00004000  // 16KB
 
-// 参数区备份 (防止写入失败)
-#define OTA_PARAMS_BACKUP_ADDR     0x080F8000
+// 参数区备份地址 - 已废弃
+// 原因: 0x080F8000-0x080FBFFF 与 App-B 末段重叠, 写入备份会损坏 App-B 固件
+// 保留宏定义仅为防止其它模块编译报错, 请勿使用
+#define OTA_PARAMS_BACKUP_ADDR     0x080F8000  /* DEPRECATED - DO NOT USE */
 
 // OTA标志定义
 #define OTA_FLAG_NORMAL            0

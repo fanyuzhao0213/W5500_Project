@@ -24,6 +24,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
+#include "ota_config.h"   /* APP_A_ADDR / APP_B_ADDR 用于运行时判断分区 */
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -191,6 +192,63 @@ void print_reset_cause(void)
 /* USER CODE END 0 */
 
 /**
+ *==============================================================================
+ * 运行时修正 SCB->VTOR (中断向量表偏移)
+ *==============================================================================
+ *
+ * 背景:
+ *   早期版本用 VECT_TAB_OFFSET 编译期宏,要求 Keil 每个 build target 单独配
+ *   Preprocessor Defines (A=0x0000C000, B=0x00084000)。一旦忘记切换 target 或
+ *   Keil 增量编译没重编 system_stm32f4xx.c,B 固件里的 VTOR 会被错固化成
+ *   0x0800C000 (App-A 的向量表地址),导致 B→A OTA 时擦 sector 3 把 B 正在
+ *   使用的中断向量表擦掉,任何中断一来就 HardFault → IWDG 复位。
+ *
+ * 解决方案:
+ *   把 VTOR 的设置从"编译期常量"改成"运行期常量"。main() 第一行根据
+ *   当前 PC 实际落在哪个 Flash 分区,设置对应的 VTOR。这样:
+ *     1. A 和 B 用同一份 .o 都不会出错
+ *     2. Keil 不再需要为每个 target 单独配 VECT_TAB_OFFSET
+ *     3. 永远以"实际跑在哪个分区"为准,不依赖编译时配置
+ *
+ * 必须在 HAL_Init() 之后立即调用,且在 NVIC 任何使能 / 任何中断打开之前
+ *
+ *==============================================================================
+ */
+
+/**
+ * @brief  根据当前 PC 实际地址,重设 SCB->VTOR 到对应的中断向量表基址
+ * @retval None
+ */
+static void ota_fix_vtor(void)
+{
+    /* 用自己的 PC 判定当前运行在哪个分区。
+     * 函数地址一定在 LR_IROM1 (即 w5500_project_*.sct 里 Image$$LR_IROM1$$Base 范围内)
+     */
+    uint32_t pc = (uint32_t)(void *)&ota_fix_vtor;
+    uint32_t vtor_base;
+
+    if ((pc >= APP_B_ADDR) && (pc < (APP_B_ADDR + APP_B_SIZE))) {
+        vtor_base = APP_B_ADDR;   /* 0x08084000 */
+    } else if ((pc >= APP_A_ADDR) && (pc < (APP_A_ADDR + APP_A_SIZE))) {
+        vtor_base = APP_A_ADDR;   /* 0x0800C000 */
+    } else {
+        /* 极端兜底:不在任何已知分区(例如 bootloader 跳进来),保持原 VTOR */
+        LOGW("ota_fix_vtor: PC=0x%08lX not in App-A/B, keep current VTOR", (unsigned long)pc);
+        return;
+    }
+
+    __DSB();
+    SCB->VTOR = vtor_base;
+    __DSB();
+    __ISB();
+
+    LOGI("ota_fix_vtor: PC=0x%08lX -> VTOR=0x%08lX (%s)",
+         (unsigned long)pc,
+         (unsigned long)SCB->VTOR,
+         (vtor_base == APP_B_ADDR) ? "APP_B" : "APP_A");
+}
+
+/**
   * @brief  The application entry point.
   * @retval int
   */
@@ -207,6 +265,10 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
+  /* 必须在任何中断/外设初始化之前修正 VTOR
+   * 否则 HAL_Init() 内部 SysTick 配置后,SysTick 中断会跳到错误的向量表 */
+  ota_fix_vtor();
 
   /* USER CODE END Init */
 
