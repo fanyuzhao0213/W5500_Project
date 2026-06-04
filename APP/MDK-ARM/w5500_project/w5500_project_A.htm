@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\w5500_project\w5500_project_A.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\w5500_project\w5500_project_A.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Jun 04 10:28:33 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Jun 04 11:19:18 2026
 <BR><P>
 <H3>Maximum Stack Usage =      18584 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -610,9 +610,9 @@ Global Symbols
 <P><STRONG><a name="[9e]"></a>strtoul</STRONG> (Thumb, 114 bytes, Stack size 40 bytes, strtoul.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = strtoul &rArr; _strtoul
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_errno_addr
+<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_errno_addr
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_ctype_table
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;parse_json_number
 </UL>
@@ -624,18 +624,18 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[96]"></a>__aeabi_llsl</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, llshl.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[233]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
 
 <P><STRONG><a name="[95]"></a>__aeabi_llsr</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, llushr.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
+<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[234]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
@@ -653,8 +653,8 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> scanf_char.o(.text)
 </UL>
 <P><STRONG><a name="[9d]"></a>_chval</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, _chval.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_scanf_int
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
+<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_scanf_int
 </UL>
 
 <P><STRONG><a name="[9b]"></a>__vfscanf_char</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, scanf_char.o(.text))
@@ -683,14 +683,14 @@ Global Symbols
 <P><STRONG><a name="[235]"></a>__I$use$fp</STRONG> (Thumb, 0 bytes, Stack size 48 bytes, iusefp.o(.text), UNUSED)
 
 <P><STRONG><a name="[a3]"></a>__aeabi_dadd</STRONG> (Thumb, 322 bytes, Stack size 48 bytes, dadd.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_lasr
+<BR><BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_lasr
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 </UL>
-<BR>[Called By]<UL><LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
+<BR>[Called By]<UL><LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
+<LI><a href="#[176]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
 <P><STRONG><a name="[a7]"></a>__aeabi_dsub</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, dadd.o(.text), UNUSED)
@@ -747,15 +747,15 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a6]"></a>_double_round</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, depilogue.o(.text), UNUSED)
-<BR><BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[a5]"></a>_double_epilogue</STRONG> (Thumb, 156 bytes, Stack size 32 bytes, depilogue.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
+<BR><BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 <LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
@@ -988,14 +988,14 @@ Global Symbols
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FLASH_WaitForLastOperation
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_TransmitReceive
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SPI_Transmit
 <LI><a href="#[170]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TimerLeftMS
 <LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TimerIsExpired
 <LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TimerInit
 <LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TimerCountdownMS
-<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Receive
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartExceptionTask
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feed_watchdog_safely
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_exception_report
@@ -1197,12 +1197,12 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[f7]"></a>HAL_TIM_ConfigClockSource</STRONG> (Thumb, 268 bytes, Stack size 24 bytes, stm32f4xx_hal_tim.o(i.HAL_TIM_ConfigClockSource))
-<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = HAL_TIM_ConfigClockSource &rArr; TIM_TI2_ConfigInputStage
+<BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = HAL_TIM_ConfigClockSource &rArr; TIM_ETR_SetConfig
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI2_ConfigInputStage
+<BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ETR_SetConfig
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI2_ConfigInputStage
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_TI1_ConfigInputStage
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ITRx_SetConfig
-<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_ETR_SetConfig
 </UL>
 <BR>[Called By]<UL><LI><a href="#[151]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_TIM2_Init
 </UL>
@@ -1742,8 +1742,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;wizphy_getphylink
 <LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;wizphy_getphylink
 <LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;notify_network_task
 <LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feed_watchdog_safely
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_exception_report
@@ -1755,8 +1755,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 2752<LI>Call Chain = StartMQTTRxTask &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
-<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_rx_queue_get
 <LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_rx_queue_get
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> mqtt_task.o(.constdata)
@@ -1765,9 +1765,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 3064<LI>Call Chain = StartMQTTTxTask &rArr; mqtt_client_publish &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
+<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_tx_queue_get
 <LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_client_publish
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> mqtt_task.o(.constdata)
@@ -1778,6 +1778,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
+<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;reg_dhcp_cbfunc
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DHCP_stop
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DHCP_run
@@ -1794,7 +1795,6 @@ Global Symbols
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_client_init
 <LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_client_disconnect
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_client_connect
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ota_confirm_boot_success
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_exception_report
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mqtt_exception_get_status
@@ -2113,8 +2113,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[9f]"></a>__aeabi_errno_addr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, errno.o(i.__aeabi_errno_addr))
-<BR><BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtoul
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_strtoul
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strtoul
 </UL>
 
 <P><STRONG><a name="[240]"></a>__rt_errno_addr</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, errno.o(i.__aeabi_errno_addr), UNUSED)
@@ -2638,8 +2638,8 @@ Global Symbols
 <P><STRONG><a name="[15b]"></a>mqtt_rx_queue_get</STRONG> (Thumb, 76 bytes, Stack size 40 bytes, mqtt_queue.o(i.mqtt_rx_queue_get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = mqtt_rx_queue_get &rArr; osMessageGet &rArr; xQueueReceive &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartMQTTRxTask
@@ -2649,9 +2649,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = mqtt_rx_queue_put &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_alloc
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
@@ -2677,8 +2677,8 @@ Global Symbols
 <P><STRONG><a name="[15c]"></a>mqtt_tx_queue_get</STRONG> (Thumb, 76 bytes, Stack size 40 bytes, mqtt_queue.o(i.mqtt_tx_queue_get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = mqtt_tx_queue_get &rArr; osMessageGet &rArr; xQueueReceive &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartMQTTTxTask
@@ -2688,9 +2688,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = mqtt_tx_queue_put &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_alloc
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
@@ -2828,8 +2828,8 @@ Global Symbols
 <P><STRONG><a name="[1d5]"></a>ota_cmd_queue_get</STRONG> (Thumb, 76 bytes, Stack size 40 bytes, mqtt_queue.o(i.ota_cmd_queue_get))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = ota_cmd_queue_get &rArr; osMessageGet &rArr; xQueueReceive &rArr; vTaskPlaceOnEventList &rArr; prvAddCurrentTaskToDelayedList &rArr; vListInsert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
-<LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<BR>[Calls]<UL><LI><a href="#[1bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessageGet
+<LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ota_client_task
@@ -2839,9 +2839,9 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 656<LI>Call Chain = ota_cmd_queue_put &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
+<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[1bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_free
 <LI><a href="#[1bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;msg_buf_alloc
-<LI><a href="#[1be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMessagePut
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 <LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
@@ -3643,20 +3643,20 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> wizchip_conf.o(.data)
 </UL>
 <P><STRONG><a name="[0]"></a>wizchip_cris_enter</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, wizchip_conf.o(i.wizchip_cris_enter))
-<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(i.reg_wizchip_cris_cbfunc)
-<LI> wizchip_conf.o(.data)
+<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(.data)
+<LI> wizchip_conf.o(i.reg_wizchip_cris_cbfunc)
 </UL>
 <P><STRONG><a name="[1]"></a>wizchip_cris_exit</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, wizchip_conf.o(i.wizchip_cris_exit))
-<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(i.reg_wizchip_cris_cbfunc)
-<LI> wizchip_conf.o(.data)
+<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(.data)
+<LI> wizchip_conf.o(i.reg_wizchip_cris_cbfunc)
 </UL>
 <P><STRONG><a name="[3]"></a>wizchip_cs_deselect</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, wizchip_conf.o(i.wizchip_cs_deselect))
-<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(i.reg_wizchip_cs_cbfunc)
-<LI> wizchip_conf.o(.data)
+<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(.data)
+<LI> wizchip_conf.o(i.reg_wizchip_cs_cbfunc)
 </UL>
 <P><STRONG><a name="[2]"></a>wizchip_cs_select</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, wizchip_conf.o(i.wizchip_cs_select))
-<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(i.reg_wizchip_cs_cbfunc)
-<LI> wizchip_conf.o(.data)
+<BR>[Address Reference Count : 2]<UL><LI> wizchip_conf.o(.data)
+<LI> wizchip_conf.o(i.reg_wizchip_cs_cbfunc)
 </UL>
 <P><STRONG><a name="[181]"></a>wizchip_getnetinfo</STRONG> (Thumb, 82 bytes, Stack size 8 bytes, wizchip_conf.o(i.wizchip_getnetinfo))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = wizchip_getnetinfo &rArr; WIZCHIP_READ_BUF
@@ -4416,10 +4416,10 @@ Local Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 928<LI>Call Chain = tcp_resolve_domain &rArr; uart_printf &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_printf
+<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DNS_run
 <LI><a href="#[213]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DNS_init
 <LI><a href="#[18e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getDNSfromDHCP
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
 <LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2snprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[1b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_client_connect

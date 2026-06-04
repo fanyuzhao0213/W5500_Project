@@ -1,333 +1,200 @@
-# STM32F4 + W5500 MQTT 客户端项目
+# STM32F4 + W5500 + MQTT + A/B OTA 工业级方案
 
-基于 STM32F405 + W5500 以太网芯片 + FreeRTOS 的 MQTT 客户端框架，实现了完整的 MQTT 连接、订阅、发布功能，并具备异常检测与自动恢复机制。
+> 适用硬件:STM32F405RGT6 + W5500 以太网芯片
+> RTOS:FreeRTOS(CMSIS-RTOS 封装)
+> IDE:Keil MDK 5
+> HAL:STM32CubeF4 HAL 库
+> 文档版本:V3.0 / 2026-06-04
 
-## 项目概述
+---
 
-本项目是一个完整的嵌入式 MQTT 客户端解决方案，适用于需要以太网通信的物联网应用。主要特点：
+## ✨ 项目亮点
 
-- **完整的 MQTT 协议支持**：连接、订阅、发布、Keep Alive
-- **异常检测与自动恢复**：PHY 链路检测、MQTT 断线重连、DHCP 租约维护
-- **非阻塞设计**：所有网络操作采用非阻塞模式，避免任务阻塞
-- **多任务架构**：基于 FreeRTOS 的多任务设计，任务隔离清晰
-- **高效日志系统**：使用 SEGGER RTT 实现零开销日志输出
-- **看门狗保护**：智能喂狗策略，异常情况下自动恢复
+| 模块 | 能力 |
+|------|------|
+| **网络** | W5500 SPI 以太网 + DHCP/静态 IP + DNS |
+| **MQTT** | Paho 嵌入式 C 客户端 + 多任务收发分离 + 异常自愈 |
+| **OTA** | 三阶段 A/B 分区 + 服务器状态机 + 失败自动回滚 + 在线升级 |
+| **可靠性** | IWDG 看门狗 + 状态机重连 + CRC32 校验 + 掉电安全 |
+| **可观测** | SEGGER RTT 零开销日志 + JSON 状态上报 + 升级进度推送 |
+| **工程规范** | 工业级编码(HAL/超时/分层/静态分配/错误码) |
 
-## 系统架构
+---
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        应用层 (Application)                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │  TimerTask   │  │   CLI Task   │  │    用户业务逻辑       │  │
-│  │ (定时发布)    │  │  (命令行)    │  │                      │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────────────────────┘  │
-├─────────┼─────────────────┼─────────────────────────────────────┤
-│         │                 │         MQTT 层                      │
-│         ▼                 ▼                                      │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │                    MQTT 任务管理                          │  │
-│  │  - NetTask (状态机)                                       │  │
-│  │  - TxTask (发送队列)                                      │  │
-│  │  - RxTask (接收队列)                                      │  │
-│  │  - 异常处理模块                                            │  │
-│  └──────────────────────────────────────────────────────────┘  │
-├─────────────────────────────────────────────────────────────────┤
-│                        MQTT 客户端层                             │
-│  - mqtt_client (封装层)                                         │
-│  - Paho MQTT Client-C (嵌入式 MQTT 库)                          │
-│  - mqtt_port (平台适配层)                                        │
-├─────────────────────────────────────────────────────────────────┤
-│                        TCP/IP 层                                 │
-│  - tcp_client (TCP 客户端封装)                                   │
-│  - W5500 Socket API                                             │
-│  - DHCP / DNS                                                   │
-├─────────────────────────────────────────────────────────────────┤
-│                        硬件抽象层                                │
-│  - STM32 HAL + FreeRTOS                                         │
-│  - SPI 驱动 (W5500 通信)                                         │
-│  - GPIO (W5500 CS/RST, LED)                                     │
-│  - TIM2 (1ms 定时器)                                             │
-│  - IWDG (独立看门狗)                                              │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-## 目录结构
+## 📂 仓库结构
 
 ```
 w5500_project/
-├── Application/                    # 应用层模块
-│   ├── MQTT/                       # MQTT 模块
-│   │   ├── inc/                    # 头文件
-│   │   │   ├── mqtt_client.h       # MQTT 客户端接口
-│   │   │   ├── mqtt_config.h       # MQTT 配置参数
-│   │   │   ├── mqtt_exception.h    # 异常处理接口
-│   │   │   ├── mqtt_port.h         # 平台适配层接口
-│   │   │   ├── mqtt_queue.h        # 消息队列接口
-│   │   │   ├── mqtt_task.h         # 任务管理接口
-│   │   │   └── timer_task.h        # 定时任务接口
-│   │   ├── src/                    # 源文件
-│   │   │   ├── mqtt_client.c       # MQTT 客户端实现
-│   │   │   ├── mqtt_exception.c    # 异常处理实现
-│   │   │   ├── mqtt_port.c         # 平台适配层实现
-│   │   │   ├── mqtt_queue.c        # 消息队列实现
-│   │   │   ├── mqtt_task.c         # 任务管理实现
-│   │   │   └── timer_task.c        # 定时任务实现
-│   │   └── paho/                   # Paho MQTT 库
-│   │
-│   ├── W5500/                      # W5500 驱动模块
-│   │   ├── tcp_client.c            # TCP 客户端实现
-│   │   ├── w5500.c                 # W5500 芯片驱动
-│   │   ├── w5500_conf.c            # W5500 SPI 配置
-│   │   ├── netconf.c               # 网络配置
-│   │   ├── socket.c                # Socket API
-│   │   ├── wizchip_conf.c          # WIZnet 芯片配置
-│   │   └── Internet/               # 网络协议
-│   │       ├── DHCP/               # DHCP 协议
-│   │       └── DNS/                # DNS 协议
-│   │
-│   ├── FreeRTOS_CLI/               # FreeRTOS 命令行接口
-│   │
-│   ├── RTT/                        # SEGGER RTT 日志
-│   │   ├── LOG.h                   # 日志封装接口
-│   │   ├── SEGGER_RTT.c            # RTT 核心实现
-│   │   └── ...
-│   │
-│   ├── ioLibrary_Driver-master/    # WIZnet 官方驱动库
-│   └── paho.mqtt.embedded-c-master/ # Paho MQTT 官方库
-│
-├── Core/                           # STM32 HAL 核心
-│   ├── Inc/                        # 头文件
-│   └── Src/                        # 源文件
-│       ├── main.c                  # 主程序入口
-│       ├── freertos.c              # FreeRTOS 配置
-│       ├── spi.c                   # SPI 配置
-│       ├── tim.c                   # 定时器配置
-│       └── ...
-│
-├── Drivers/                        # STM32 HAL 驱动
-├── Middlewares/                    # FreeRTOS 中间件
-└── docs/                           # 文档目录
-    ├── W5500_MQTT_Framework.md     # 框架说明文档
-    └── W5500_MQTT_Porting_Guide.md # 移植指南文档
+├── APP/                                # STM32 App 工程
+│   ├── Application/
+│   │   ├── MQTT/                       # MQTT 客户端 (Paho 封装 + 任务 + 队列 + 异常)
+│   │   ├── W5500/                      # W5500 驱动 + TCP + DHCP + DNS
+│   │   ├── OTA/                        # OTA 客户端 (Flash 驱动 + 参数区 + 状态机)
+│   │   ├── FreeRTOS_CLI/               # 命令行接口
+│   │   └── RTT/                        # SEGGER RTT 日志
+│   ├── Bootloader/                     # 独立 Bootloader 工程 (A/B 切换核心)
+│   ├── Core/                           # STM32 HAL 核心 (main.c, system_stm32f4xx.c)
+│   ├── Drivers/                        # HAL / CMSIS 驱动
+│   ├── MDK-ARM/                        # Keil 工程 (含 A/B 两个 build target)
+│   ├── docs/                           # 📚 全部设计文档
+│   └── README.md                       # 本文件
+├── SERVER/                             # 🖥️  Python OTA 服务器 (PyQt5 GUI)
+│   ├── ota_server.py                   # 服务器主程序
+│   ├── OTA_Protocol_Specification.md   # 协议规范(服务器侧)
+│   └── requirements.txt
+├── CLAUDE.md                           # Claude Agent 编码规则
+├── PROJECT_RULES.md                    # 项目业务规则
+└── (其他文档)                          # 调试记录、升级计划等
 ```
 
-## 硬件配置
+---
 
-### 1. 微控制器
-- **MCU**: STM32F405RGT6
-- **系统时钟**: 168 MHz (HSE)
-- **调试接口**: SWD
-
-### 2. W5500 以太网芯片
-- **接口**: SPI1
-- **CS 引脚**: PA4
-- **RST 引脚**: PB0
-- **SPI 时钟**: 最高 33 MHz
-
-### 3. 其他硬件
-- **LED**: PC8 (状态指示)
-- **UART4**: 调试串口（可选）
-- **TIM2**: 1ms 定时器（用于时间戳）
-- **IWDG**: 独立看门狗（系统保护）
-
-## 软件组件
-
-### 1. FreeRTOS 任务
-
-| 任务名称 | 优先级 | 栈大小 | 功能 |
-|---------|-------|-------|------|
-| StartNetTask | 高 | 512 | 网络状态机管理 |
-| StartMQTTTxTask | 中 | 256 | MQTT 发送队列处理 |
-| StartMQTTRxTask | 中 | 256 | MQTT 接收队列处理 |
-| StartTimerTask | 低 | 256 | 定时任务管理 |
-| StartCLITask | 低 | 256 | 命令行接口 |
-
-### 2. MQTT 功能
-
-- **连接**: 自动连接 MQTT Broker
-- **订阅**: 自动订阅指定主题
-- **发布**: 定时发布消息（5秒间隔）
-- **Keep Alive**: 60 秒心跳间隔
-- **QoS**: 支持 QoS0 和 QoS1
-
-### 3. 异常处理
-
-| 异常类型 | 检测机制 | 恢复策略 |
-|---------|---------|---------|
-| PHY 链路断开 | 每 100ms 检测 | 网络完全复位 |
-| DHCP 失败 | DHCP 超时 | 重启 DHCP |
-| MQTT 断开 | Keep Alive 失败 | MQTT 重连 |
-| 订阅失败 | SUBACK 错误 | MQTT 重连 |
-
-### 4. 网络配置
-
-支持两种 IP 获取方式：
-- **DHCP 模式**: 自动获取 IP 地址
-- **静态 IP**: 手动配置 IP 地址
-
-## 功能特性
-
-### 1. 核心功能
-- ✅ MQTT 连接、订阅、发布
-- ✅ PHY 链路检测与恢复
-- ✅ DHCP 自动获取 IP
-- ✅ DNS 域名解析
-- ✅ Keep Alive 心跳维护
-- ✅ 异常检测与自动恢复
-
-### 2. 高级功能
-- ✅ 消息队列异步发送/接收
-- ✅ 定时任务调度
-- ✅ 看门狗智能喂狗
-- ✅ SEGGER RTT 高效日志
-- ✅ FreeRTOS CLI 命令行
-
-### 3. 可配置参数
-- ✅ MQTT Broker 地址/端口
-- ✅ MQTT Client ID
-- ✅ MQTT 用户名/密码
-- ✅ MQTT Keep Alive 间隔
-- ✅ MQTT QoS 等级
-- ✅ 订阅/发布主题
-- ✅ 发布间隔
-- ✅ 缓冲区大小
-
-## 使用说明
-
-### 1. 环境准备
-
-**硬件：**
-- STM32F405 开发板
-- W5500 以太网模块
-- J-Link 调试器
-- 网线
-
-**软件：**
-- Keil MDK 或 STM32CubeIDE
-- J-Link RTT Viewer（查看日志）
-- MQTT Broker（如 EMQX、Mosquitto）
-
-### 2. 配置修改
-
-修改 `Application/MQTT/inc/mqtt_config.h`：
-
-```c
-/* MQTT Broker 配置 */
-#define MQTT_BROKER_IP         "your.broker.ip"    // 修改为你的 Broker IP
-#define MQTT_BROKER_PORT       1883                // 修改端口
-#define MQTT_CLIENT_ID         "your_client_id"    // 修改 Client ID
-
-/* 订阅/发布主题 */
-#define MQTT_SUBSCRIBE_TOPIC   "your/topic"        // 修改订阅主题
-#define MQTT_PUBLISH_TOPIC     "your/topic"        // 修改发布主题
-#define MQTT_PUBLISH_INTERVAL  5000                // 修改发布间隔
-```
-
-### 3. 编译与烧录
-
-1. 打开 Keil MDK 工程：`MDK-ARM/w5500_project.uvprojx`
-2. 编译项目（Build）
-3. 使用 J-Link 烧录到 STM32
-
-### 4. 查看日志
-
-1. 连接 J-Link 到 STM32
-2. 打开 J-Link RTT Viewer
-3. 选择正确的连接配置
-4. 查看实时日志输出
-
-### 5. 验证功能
-
-**正常启动日志：**
+## 🏗️ 系统架构一图看懂
 
 ```
-I: TimerTask: started
-I: W5500: Init success, version=0x04
-I: PHY: Link detected!
-I: DHCP: Success, IP=192.168.1.100
-I: MQTT: Connecting to broker...
-I: MQTT CONNECT OK
-I: MQTT: Subscribe OK
-I: MQTT: Successfully connected to broker!
-I: TimerTask: publish queued success!
+┌────────────────────────────────────────────────────────────────────┐
+│  STM32F405RGT6                                                     │
+│                                                                    │
+│  ┌──────────────────────────────────────────────────────────┐    │
+│  │  App-A (0x0800C000, 480KB)        App-B (0x08084000, 480KB)  │    │
+│  │  ┌──────────────────────────┐    ┌────────────────────────┐│    │
+│  │  │ FreeRTOS                  │    │ FreeRTOS                ││    │
+│  │  │  ├─ NetTask  (高)         │    │  ├─ NetTask (高)        ││    │
+│  │  │  ├─ MQTTTxtask (中)        │    │  ├─ MQTTTxtask (中)      ││    │
+│  │  │  ├─ MQTTRxTask (中)        │    │  ├─ MQTTRxTask (中)      ││    │
+│  │  │  ├─ OTATask  (高)          │    │  ├─ OTATask (高)         ││    │
+│  │  │  └─ Timer/CLI (低)         │    │  └─ Timer/CLI (低)       ││    │
+│  │  └──────────────────────────┘    └────────────────────────┘│    │
+│  │  Bootloader (0x08000000, 48KB)                            │    │
+│  │  - 读 ota_params → 跳 active_app                          │    │
+│  │  - 维护 boot_count 安全网                                  │    │
+│  │  Params (0x080FC000, 16KB)                                │    │
+│  │  - ota_flag / active_app / boot_count / valid / version    │    │
+│  └──────────────────────────────────────────────────────────┘    │
+│           │ SPI                                                      │
+│           ▼                                                          │
+│  ┌────────────────┐      MQTT over TCP        ┌────────────────┐ │
+│  │  W5500 以太网  │ ◄──────────────────────────► │  PyQt5 OTA    │ │
+│  │  (TCP/IP 协议栈) │      W5500 ◄── SPI ──► STM32   │  服务器       │ │
+│  └────────────────┘                              └────────────────┘ │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
-## 配置参数
+---
 
-### MQTT 配置 (mqtt_config.h)
+## 🚀 快速开始
 
-| 参数 | 默认值 | 说明 |
-|-----|-------|------|
-| MQTT_BROKER_IP | "47.74.187.120" | MQTT 服务器 IP |
-| MQTT_BROKER_PORT | 1883 | MQTT 服务器端口 |
-| MQTT_CLIENT_ID | "stm32_w5500_client" | 客户端 ID |
-| MQTT_KEEP_ALIVE | 60 | Keep Alive 间隔 (秒) |
-| MQTT_COMMAND_TIMEOUT | 5000 | 命令超时 (ms) |
-| MQTT_SUBSCRIBE_TOPIC | "stm32/test" | 订阅主题 |
-| MQTT_PUBLISH_TOPIC | "stm32/uptime" | 发布主题 |
-| MQTT_PUBLISH_INTERVAL | 5000 | 发布间隔 (ms) |
+### 1. 硬件准备
+- STM32F405RGT6 开发板
+- W5500 以太网模块(SPI 接口)
+- 网络能访问 MQTT Broker
 
-### 网络配置
+### 2. 打开工程
+- 双击 `APP/MDK-ARM/w5500_project.uvprojx`
+- Keil 自动识别 2 个 build target:
+  - **`w5500_project_A`** — 编译 App-A,VECT_TAB_OFFSET=0x0000C000
+  - **`w5500_project_B`** — 编译 App-B,VECT_TAB_OFFSET=0x00084000
 
-| 参数 | 默认值 | 说明 |
-|-----|-------|------|
-| NET_CONFIG_MODE | DHCP | IP 获取方式 |
-| STATIC_IP_ADDR | "192.168.1.88" | 静态 IP |
-| MAC_ADDR | "00:08:DC:12:34:56" | MAC 地址 |
+### 3. 首次烧录(必须)
+1. 切到 `w5500_project_A` target → F7 → 得到 `w5500_project_A.bin`
+2. 用 ST-Link / J-Link 把 **Bootloader** + **App-A.bin** 烧录到 `0x08000000`
+3. 烧 `w5500_project_B.bin` 到 `0x08084000`(用于后续 OTA 验证)
 
-## 日志系统
-
-### 日志级别
-
-| 宏 | 说明 | 颜色 |
-|-----|------|------|
-| `LOGI(...)` | 信息级别 | 绿色 |
-| `LOGW(...)` | 警告级别 | 黄色 |
-| `LOGE(...)` | 错误级别 | 红色 |
-
-### 使用示例
-
-```c
-LOGI("MQTT: Connected to broker");
-LOGW("MQTT: Keep Alive timeout");
-LOGE("MQTT: Publish failed, rc=%d", rc);
+### 4. 启动服务器
+```bash
+cd SERVER
+pip install -r requirements.txt
+python ota_server.py
 ```
+GUI 启动 → 配置 Broker → 连接 → 选固件 → 升级。
 
-## 文档
+### 5. 触发 OTA
+服务器选 App-B 固件 → "开始升级" → 设备收块 → 写入 → CRC 校验 → 自动重启 → 跳到 B → 联网 → 服务器收到 `ota_success`。
 
-详细文档请参阅：
+---
 
-- **框架说明**: [docs/W5500_MQTT_Framework.md](docs/W5500_MQTT_Framework.md)
-- **移植指南**: [docs/W5500_MQTT_Porting_Guide.md](docs/W5500_MQTT_Porting_Guide.md)
+## 📚 文档导航
 
-## 版本历史
+| 文档 | 何时读它 |
+|------|---------|
+| [docs/Project_Index.md](docs/Project_Index.md) | 7 个文档的总导航(不知道看哪个就先看这个) |
+| [docs/OTA_Quick_Reference.md](docs/OTA_Quick_Reference.md) | 1 页速查 OTA 状态机/分区/标志/主题 |
+| [docs/OTA_Architecture.md](docs/OTA_Architecture.md) | 设备/服务器/bootloader 三端完整架构 |
+| [docs/OTA_Protocol_Specification.md](docs/OTA_Protocol_Specification.md) | 消息格式/字段/超时/重试协议细节 |
+| [docs/OTA_Integration_Guide.md](docs/OTA_Integration_Guide.md) | Keil 工程配置/sct/VTOR 修复/构建步骤 |
+| [docs/W5500_MQTT_Framework.md](docs/W5500_MQTT_Framework.md) | 框架结构/任务/数据流(网络/MQTT) |
+| [docs/W5500_MQTT_Porting_Guide.md](docs/W5500_MQTT_Porting_Guide.md) | 移植到其他 STM32 |
 
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| v1.0 | 2026-05-28 | 初始版本，集成 RTT 和 FreeRTOS |
-| v2.0 | 2026-05-29 | 添加 W5500 驱动和 MQTT 客户端 |
-| v2.1 | 2026-05-30 | 添加异常检测与自动恢复机制 |
-| v2.2 | 2026-05-30 | 添加定时任务和消息队列 |
+---
 
-## 许可证
+## 🔑 关键设计原则
 
-本项目使用以下开源组件：
+按本项目长期运行、工业级场景的要求:
 
-- **STM32 HAL**: STMicroelectronics BSD 许可证
-- **FreeRTOS**: MIT 许可证
-- **Paho MQTT**: Eclipse 公共许可证
-- **WIZnet ioLibrary**: WIZnet 许可证
-- **SEGGER RTT**: SEGGER 许可证
+1. **HAL 库** — 不用标准库/LL/裸寄存器
+2. **完整输出** — 不留 `// TODO 用户自行实现`
+3. **错误处理** — 所有函数检查返回值,失败 `LOGE`
+4. **禁止动态内存** — 工业项目长期运行禁堆碎片
+5. **所有操作支持超时** — 禁 `while(socket wait)`
+6. **网络分层恢复** — 禁 MQTT 失败就重置整个 W5500
+7. **统一日志** — `LOGI/LOGW/LOGE` 禁 printf
+8. **UTF-8 编码** — 禁乱码中文
+9. **命名规范** — 函数 snake_case / 变量 g_xxx / 宏 UPPER_CASE
+10. **任务分层** — 禁 1 个任务包揽网络逻辑
 
-## 参考资料
+详见 [CLAUDE.md](CLAUDE.md)
 
-- [STM32F405 数据手册](https://www.st.com/)
-- [W5500 数据手册](https://www.wiznet.io/)
-- [Paho MQTT 文档](https://www.eclipse.org/paho/)
-- [FreeRTOS 文档](https://www.freertos.org/)
-- [SEGGER RTT 文档](https://www.segger.com/)
+---
 
-## 技术支持
+## 📊 关键参数速查
 
-如有问题，请参考项目文档或查看源码注释。
+| 项 | 值 | 位置 |
+|---|---|---|
+| 设备 ID | `w5500_001` | `Application/MQTT/inc/mqtt_config.h` |
+| MQTT Broker | `app-management-server.washer-saas.istarix.com:20118` | `mqtt_config.h` |
+| 块大小 | 1 KB(默认) / 2 KB / 4 KB | `mqtt_config.h` |
+| 最大固件 | 480 KB | `Application/OTA/ota_config.h` |
+| ACK 超时 | 2 秒 | `SERVER/ota_server.py` |
+| 重试次数 | 5 次/块 | `SERVER/ota_server.py` |
+| 整个升级超时 | 5 分钟 | `SERVER/ota_server.py` |
+| 新固件联网确认超时 | 1 分钟 | `SERVER/ota_server.py` |
+| 看门狗 | IWDG 10 秒 | `Core/Src/main.c` |
+
+---
+
+## 🐛 故障排查
+
+| 现象 | 看哪 |
+|------|------|
+| MQTT 连不上 | 物理链路 → DHCP → Broker 地址 → 用户名密码 |
+| OTA 卡在下载中 | 服务器日志看 ACK 超时 / 设备日志看 Flash 写错误 |
+| 升级后不重启 | 看是否出现 `Will reboot in 2s` 日志;否则 ota_trigger_upgrade 提前 return |
+| 重启后没跳新分区 | bootloader 日志 / 验证 `active_app` 是否写对 |
+| B→A 升级擦 sector 3 死机 | **VTOR 没设对** → 参考 [docs/OTA_Integration_Guide.md §VTOR 修复](docs/OTA_Integration_Guide.md) |
+| 升级时设备掉电,再上电卡住 | bootloader 读 PENDING 后会一直 boot_count++,5 次后兜底 |
+
+---
+
+## 📝 版本历史
+
+| 版本 | 日期 | 主要变更 |
+|------|------|---------|
+| V1.0 | 2026-05-30 | 初版 MQTT 框架 |
+| V2.0 | 2026-06-02 | 加入 A/B OTA 基础流程 |
+| V2.1 | 2026-06-03 | 修复 boot_count 双重递增、加入 ota/notify 事件 |
+| V2.2 | 2026-06-03 | 加入运行时段 VECT_TAB 修复、完整三阶段升级 |
+| V3.0 | 2026-06-04 | 全面重写文档,按角色分类梳理;服务器 ACK 超时调为 2s;修复 timer 泄漏 |
+
+---
+
+## 🤝 贡献
+
+修改前必读:
+- [CLAUDE.md](CLAUDE.md) — 编码规则(给 Claude Agent 看的)
+- [PROJECT_RULES.md](PROJECT_RULES.md) — 业务规则
+
+代码改动要求:
+- 任何 OTA 协议/状态机改动 → 同步更新 `docs/OTA_Architecture.md` 和 `docs/OTA_Protocol_Specification.md`
+- 任何 Flash 分区改动 → 同步更新 `docs/OTA_Quick_Reference.md` §Flash 分区
+- 任何新增 MQTT 主题 → 同步更新 `docs/OTA_Protocol_Specification.md` §主题定义
+- 任何服务器超时/重试改动 → 同步更新 `docs/OTA_Quick_Reference.md` §超时配置
